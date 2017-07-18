@@ -43,6 +43,10 @@ html, body {
     margin-right: 3px;
     margin-left: 3px;
 }
+.mdl-button {
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
 
 /*
 .mdl-demo .mdl-layout__header-row {
