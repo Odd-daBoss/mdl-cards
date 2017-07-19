@@ -18,6 +18,23 @@
 
   <body class="mdl-demo mdl-color--grey-100 mdl-color-text--grey-700 mdl-base">
 
+
+    <div id="user-container">
+      <div hidden id="user-pic"></div>
+      <div hidden id="user-name"></div>
+      <center>
+        <button id="sign-in" class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored mdl-shadow--4dp mdl-color--accent">
+          <i class="material-icons" role="presentation">lock_open</i>
+        </button>
+        <button hidden id="add-card" class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored mdl-shadow--4dp mdl-color--accent">
+          <i class="material-icons" role="presentation">add</i>
+        </button>
+        <button hidden id="sign-out" class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored mdl-shadow--4dp mdl-color--accent">
+          <i class="material-icons" role="presentation">highlight_off</i>
+        </button>
+      </center>
+    </div>
+
     <!-- Begin of the card(s) -->
     <!-- (A) -->
     <br />
@@ -575,6 +592,30 @@
     <!-- (End) -->
     <center>
     <button class="mdl-button mdl-button--fab mdl-button--colored" onclick="location.href='#sec0';"><i class="material-icons">arrow_forward</i></button></center>
+
+    <!-- Import and configure the Firebase SDK -->
+    <!-- These scripts are made available when the app is served or deployed on Firebase Hosting -->
+    <!-- If you do not want to serve/host your project using Firebase Hosting see https://firebase.google.com/docs/web/setup -->
+    <!--
+    <script src="/__/firebase/4.1.3/firebase.js"></script>
+    <script src="/__/firebase/init.js"></script> -->
+
+    <script src="https://www.gstatic.com/firebasejs/4.1.3/firebase.js"></script>
+    <script>
+      // Initialize Firebase
+      var config = {
+        apiKey: "AIzaSyCYyhVPbqFj7_68jILiONrQWbI4Cxd7i38",
+        authDomain: "live-feed-cards.firebaseapp.com",
+        databaseURL: "https://live-feed-cards.firebaseio.com",
+        projectId: "live-feed-cards",
+        storageBucket: "live-feed-cards.appspot.com",
+        messagingSenderId: "287221611276"
+      };
+      firebase.initializeApp(config);
+    </script>
+
+    <script src="/scripts/main.js"></script>
+
 
   </body>
 </html>
