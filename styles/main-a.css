@@ -1,0 +1,132 @@
+html, body {
+  font-family: 'Roboto', 'Helvetica', sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+.mdl-grid {
+    max-width: 600px;
+}
+.mdl-card__media {
+    margin: 0;
+}
+.mdl-card__media > img {
+    max-width: 100%;
+}
+.mdl-card__actions {
+    display: flex;
+    box-sizing:border-box;
+    align-items: center;
+}
+.mdl-card__actions > .mdl-button--icon {
+    margin-right: 3px;
+    margin-left: 3px;
+}
+.mdl-button {
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+.fixed-buttons {
+    position: fixed;
+    top: 0.02%;
+    right: 0.02%;
+    width: 80px;
+    z-index: 999;
+}
+
+/*
+.fixed-input {
+  position: fixed;
+  top: 0.02%;
+  right: 0.02%;
+  max-width: 800px;
+  z-index: 10;
+}
+
+h2, input::-webkit-input-placeholder, button {
+  font-family: 'roboto', sans-serif;
+  transition: all 0.3s ease-in-out;
+}
+
+h2 {
+  height: 100px;
+  width: 100%;
+  font-size: 18px;
+  background: darken($color, 4%);
+  color: white;
+  line-height: 150%;
+  border-radius: 3px 3px 0 0;
+  box-shadow: 0 2px 5px 1px rgba(0,0,0,0.2);
+}
+
+form {
+  box-sizing: border-box;
+  margin: 100px auto 0;
+  box-shadow: 2px 2px 5px 1px rgba(0,0,0,0.2);
+  padding-bottom: 40px;
+  border-radius: 3px;
+  h1 {
+    box-sizing: border-box;
+    padding: 20px;
+  }
+}
+
+input {
+  margin: 40px 25px;
+  width: 200px;
+  display: block;
+  border: none;
+  padding: 10px 0;
+  border-bottom: solid 1px $color;
+  transition: all 0.3s cubic-bezier(.64,.09,.08,1);
+  background: linear-gradient(to bottom, rgba(255,255,255,0) 96%, $color 4%);
+  background-position: -200px 0;
+  background-size: 200px 100%;
+  background-repeat: no-repeat;
+  color: darken($color, 20%);
+  &:focus, &:valid {
+    box-shadow: none;
+    outline: none;
+    background-position: 0 0;
+    &::-webkit-input-placeholder {
+      color: $color;
+      font-size: 11px;
+      transform: translateY(-20px);
+      visibility: visible !important;
+    }
+  }
+}
+
+button {
+  border: none;
+  background: $color;
+  cursor: pointer;
+  border-radius: 3px;
+  padding: 6px;
+  width: 200px;
+  color: white;
+  margin-left: 25px;
+  box-shadow: 0 3px 6px 0 rgba(0,0,0,0.2);
+  &:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 6px 0 rgba(0,0,0,0.2);
+  }
+}
+*/
+
+#user-container #user-pic {
+  position: relative;
+  display: inline-block;
+  background-image: url('/images/profile_placeholder.svg');
+  background-repeat: no-repeat;
+  width: 40px;
+  height: 40px;
+  background-size: 40px;
+  border-radius: 20px;
+}
+#user-container #user-name {
+  font-size: 8px;
+  line-height: 36px;
+  padding-right: 10px;
+  padding-left: 20px;
+}
