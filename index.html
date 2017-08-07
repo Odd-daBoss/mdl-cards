@@ -22,49 +22,45 @@
     <section hidden id="input-story" class="section--center mdl-grid mdl-grid--no-spacing mdl-shadow--2dp">
       <div class="mdl-card mdl-cell mdl-cell--12-col">
 
-        <div id="user-container" class="mdl-card__title mdl-card--expand">
-          <div id="user-pic"></div>
-          <div id="user-name"></div>
-        </div>
-
         <form id="new-card-form" action="#">
 
-          <div class="file_input_div">
-            <div class="file_input">
-              <label class="image_input_button mdl-button mdl-js-button mdl-button--fab mdl-button--mini-fab mdl-js-ripple-effect mdl-button--colored">
-                <i class="material-icons">file_upload</i>
-                <input id="file_input_file" class="none" type="file" />
-              </label>
+          <div id="input-wrapper">
+            <div class="file_input_div">
+              <div id="fileDisplay"></div>
+              <div>
+                <button id="card-photo" class="mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect">
+                  <i class="material-icons">insert_photo</i>
+                </button>
+                <input id="file-upload" class="none" type="file" accept="image/*" capture="camera" />
+              </div>
             </div>
-            <div id="file_input_text_div" class="mdl-textfield mdl-js-textfield textfield-demo">
-              <input class="file_input_text mdl-textfield__input" type="text" disabled readonly id="file_input_text" />
-              <label class="mdl-textfield__label" for="file_input_text"></label>
-            </div>
-          </div>
 
-          <div class="mdl-textfield mdl-js-textfield mdl-textfield--expandable">
-            <label class="mdl-button mdl-js-button mdl-button--icon" for="title-story">
-              <i class="material-icons">class</i>
-            </label>
-            <div class="mdl-textfield__expandable-holder">
+            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
               <input class="mdl-textfield__input" type="text" autocomplete="off" id="title-story" />
               <label class="mdl-textfield__label" for="title-story">Title</label>
-            </div>
-          </div><br />
+            </div><br />
 
-          <div class="mdl-textfield mdl-js-textfield mdl-textfield--expandable">
-            <label class="mdl-button mdl-js-button mdl-button--icon" for="content-story">
-              <i class="material-icons">assignment</i>
-            </label>
-            <div class="mdl-textfield__expandable-holder">
-              <textarea class="mdl-textfield__input" type="text" rows="15" id="content-story"></textarea>
-              <!--
-              <label class="mdl-textfield__label" for="content-story">Story</label> -->
+            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+              <textarea class="mdl-textfield__input" type="text" rows="10" id="content-story"></textarea>
+              <label class="mdl-textfield__label" for="content-story">Story</label>
+            </div><br />
+          </div>
+
+          <!-- Border and Action Elements -->
+          <div class="mdl-card__actions mdl-card--border">
+
+            <div id="user-container" class="mdl-card__title mdl-card--expand">
+              <div id="user-pic"></div>
+              <a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect"
+                  href="https://plus.google.com/+UdomsakOdd">
+              <div id="user-name"></div></a>
             </div>
-          </div><br />
-          <button id="submit" type="submit" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect">
-            Submit
-          </button>
+            <div class="mdl-layout-spacer"></div>
+            <button id="submit" type="submit" class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect
+              mdl-button--colored mdl-shadow--4dp mdl-color--accent">
+              <i class="material-icons" role="presentation">send</i>
+            </button>
+          </div>
         </form>
 
         <!-- Menu button with Effects -->

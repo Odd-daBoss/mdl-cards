@@ -1,5 +1,30 @@
 'use strict';
 
+function handleFileSelect() {
+    var file = document.getElementById('file-upload').files[0];;
+
+    // Loop through the FileList and render image files as thumbnails.
+    // for (var i = 0, f; f = files[i]; i++) {
+
+      // Only process image files.
+      if (file.type.match('image.*')) {
+
+        var reader = new FileReader();
+
+        // Closure to capture the file information.
+        reader.onload = function(e) {
+					fileDisplay.innerHTML = "";
+
+					var img = new Image();
+					img.src = reader.result;
+
+					fileDisplay.appendChild(img);
+				}
+
+				reader.readAsDataURL(file);
+      }
+}
+
 function LiveCards() {
   this.checkSetup();
 
@@ -20,6 +45,8 @@ function LiveCards() {
   this.addCard.addEventListener('click', this.addNewCard.bind(this));
   this.deleteCard.addEventListener('click', this.deleteNewCard.bind(this));
   this.signOutButton.addEventListener('click', this.signOut.bind(this));
+
+  document.getElementById('file-upload').addEventListener('change', handleFileSelect, false);
 
   this.initFirebase();
 }
