@@ -30,18 +30,21 @@ function LiveCards() {
 
   // Shortcuts to DOM Elements.
   this.submitButton = document.getElementById('submit');
-  this.mediaCapture = document.getElementById('mediaCapture');
+  this.fileUpload = document.getElementById('file-upload');
+  this.titleStory = document.getElementById('title-story');
+  this.contentStory = document.getElementById('content-story');
   this.userPic = document.getElementById('user-pic');
   this.userName = document.getElementById('user-name');
   this.signOutButton = document.getElementById('sign-out');
   this.addCard = document.getElementById('add-card');
   this.deleteCard = document.getElementById('del-card');
-  this.inputBlock = document.getElementById('input-story');
-  this.cardForm = document.getElementById('new-card-form');
+  this.inputBlock = document.getElementById('input-block');
+  this.storyForm = document.getElementById('story-form');
 
   // Toggle for the button.
   var buttonTogglingHandler = this.toggleButton.bind(this);
 
+  this.storyForm.addEventListener('submit', this.saveStory.bind(this));
   this.addCard.addEventListener('click', this.addNewCard.bind(this));
   this.deleteCard.addEventListener('click', this.deleteNewCard.bind(this));
   this.signOutButton.addEventListener('click', this.signOut.bind(this));
@@ -72,33 +75,40 @@ LiveCards.prototype.addNewCard = function() {
   }
 };
 
-//Delete the new card.
+//Delete the new card -
+//Clear image and form!!
 LiveCards.prototype.deleteNewCard = function() {
   if (this.auth.currentUser) {
-    this.cardForm.reset();
+    fileDisplay.innerHTML = "";
+    this.storyForm.reset();
     this.inputBlock.setAttribute('hidden', 'true');
   }
 };
 
 // Saves a new message on the Firebase DB.
-LiveCards.prototype.saveMessage = function(e) {
+LiveCards.prototype.saveStory = function(e) {
   e.preventDefault();
   // Check that the user entered a message and is signed in.
   // if (this.messageInput.value && this.checkSignedInWithMessage()) {
-  if (this.messageInput.value) {
+  if (this.fileUpload.value || this.titleStory.value || this.contentStory.value) {
     var currentUser = this.auth.currentUser;
     // Add a new message entry to the Firebase Database.
 
     window.alert('DB Input');
-    this.messagesRef = this.database.ref('messages');
+    this.messagesRef = this.database.ref('book-20170808165000');
     this.messagesRef.push({
+
       name: currentUser.displayName,
-      text: this.messageInput.value,
-      photoUrl: currentUser.photoURL || '/images/profile_placeholder.png'
+      photoUrl: currentUser.photoURL || '/images/profile_placeholder.png',
+      imageUrl: this.fileUpload.value,
+      title: this.titleStory.value,
+      content: this.contentStory.value
+
     }).then(function() {
       // Clear message text field and SEND button state.
-      LiveCards.resetMaterialTextfield(this.messageInput);
-      this.toggleButton();
+      this.deleteNewCard();
+      // LiveCards.resetMaterialTextfield(this.messageInput);
+      // this.toggleButton();
     }.bind(this)).catch(function(error) {
       console.error('Error writing new message to Firebase Database', error);
     });
@@ -115,7 +125,7 @@ LiveCards.prototype.signIn = function() {
 // Signs-out of Live Cards.
 LiveCards.prototype.signOut = function() {
   // Clear form and Sign out of Firebase.
-  this.cardForm.reset();
+  this.deleteNewCard();
   this.auth.signOut();
 };
 

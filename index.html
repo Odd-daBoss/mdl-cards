@@ -19,20 +19,21 @@
   <body class="mdl-demo mdl-color--grey-100 mdl-color-text--grey-700 mdl-base">
 
     <section id="sec0"><br /></section>
-    <section hidden id="input-story" class="section--center mdl-grid mdl-grid--no-spacing mdl-shadow--2dp">
+    <section hidden id="input-block" class="section--center mdl-grid mdl-grid--no-spacing mdl-shadow--2dp">
       <div class="mdl-card mdl-cell mdl-cell--12-col">
 
-        <form id="new-card-form" action="#">
+        <form id="story-form" onSubmit="console.log('Input 1: '+document.getElementById('file-upload').value
+          + ' Input 2: '+document.getElementById('title-story').value
+          + ' Input 3: '+document.getElementById('content-story').value)">
 
           <div id="input-wrapper">
-            <div class="file_input_div">
-              <div id="fileDisplay"></div>
-              <div>
-                <button id="card-photo" class="mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect">
-                  <i class="material-icons">insert_photo</i>
-                </button>
-                <input id="file-upload" class="none" type="file" accept="image/*" capture="camera" />
-              </div>
+            <div id="fileDisplay">
+            </div>
+            <div>
+              <label class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--primary">
+                <i class="material-icons">image_upload</i>
+                <input id="file-upload" class="none" type="file" accept="image/*,capture="camera" />
+              </lable>
             </div>
 
             <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
@@ -57,7 +58,7 @@
             </div>
             <div class="mdl-layout-spacer"></div>
             <button id="submit" type="submit" class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect
-              mdl-button--colored mdl-shadow--4dp mdl-color--accent">
+              mdl-button--colored mdl-color--accent">
               <i class="material-icons" role="presentation">send</i>
             </button>
           </div>
@@ -637,7 +638,8 @@
         mdl-button--colored mdl-shadow--4dp mdl-color--accent" onclick="location.href='#sec0';">
         <i class="material-icons" role="presentation">create</i>
       </button>
-      <button hidden id="sign-out" class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored mdl-shadow--4dp mdl-color--accent">
+      <button hidden id="sign-out" class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect
+        mdl-button--colored mdl-shadow--4dp mdl-color--accent">
         <i class="material-icons" role="presentation">exit_to_app</i>
       </button>
     </div>
