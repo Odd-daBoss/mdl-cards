@@ -29,6 +29,7 @@ function LiveCards() {
   this.checkSetup();
 
   // Shortcuts to DOM Elements.
+  this.storyList = document.getElementById('story-list');
   this.submitButton = document.getElementById('submit');
   this.fileUpload = document.getElementById('file-upload');
   this.titleStory = document.getElementById('title-story');
@@ -64,6 +65,94 @@ LiveCards.prototype.initFirebase = function() {
   this.auth.onAuthStateChanged(this.onAuthStateChanged.bind(this));
 };
 
+// Loads chat messages history and listens for upcoming ones.
+LiveCards.prototype.loadBook = function() {
+  // Reference to the /messages/ database path.
+  this.bookRef = this.database.ref('book-20170808165000');
+  // Make sure we remove all previous listeners.
+  this.bookRef.off();
+
+  // Loads the last 12 messages and listen for new ones.
+  var setStory = function(data) {
+    var val = data.val();
+    this.displayStory(data.key, val.title, val.content, val.name, val.photoUrl, val.imageUrl);
+  }.bind(this);
+  this.bookRef.limitToLast(5).on('child_added', setStory);
+  this.bookRef.limitToLast(5).on('child_changed', setStory);
+};
+
+// Template for messages.
+LiveCards.STORY_TEMPLATE =
+/*    '<div class="message-container">' +
+      '<div class="spacing"><div class="pic"></div></div>' +
+      '<div class="message"></div>' +
+      '<div class="name"></div>' +
+    '</div>' +
+
+
+    '<br />' +
+*/
+    '<section class="section--center mdl-grid mdl-grid--no-spacing mdl-shadow--2dp">' +
+      '<div class="mdl-card mdl-cell mdl-cell--12-col">' +
+
+        '<figure class="mdl-card__media">' +
+          '<img src="https://instagram.fbkk2-3.fna.fbcdn.net/t51.2885-15/s640x640/sh0.08/e35/c214.0.651.651/17882852_1845382215487628_4926213667583688704_n.jpg" alt="" />' +
+        '</figure>' +
+        '<div class="mdl-card__title mdl-card--expand">' +
+          '<h1 class="title mdl-card__title-text mdl-color-text--blue-grey-300"></h1>' +
+        '</div>' +
+        '<div class="mdl-card__supporting-text">' +
+          '<p class="content"></p>' +
+        '</div>' +
+        '<div class="mdl-card__actions mdl-card--border">' +
+          '<a class="userPic mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect"></a>' +
+          '<div class="mdl-layout-spacer"></div>' +
+          '<button class="mdl-button mdl-button--icon mdl-button--colored"><i class="material-icons">favorite</i></button>' +
+        '</div>' +
+        '<div class="mdl-card__menu">' +
+          '<button class="mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect">' +
+            '<i class="material-icons">share</i>' +
+          '</button>' +
+        '</div>' +
+      '</div>' +
+    '</section><br />';
+
+
+// Displays a Story in the UI.
+LiveCards.prototype.displayStory = function(key, title, content, name, picUrl, imageUri) {
+  var div = document.getElementById(key);
+  // If an element for that message does not exists yet we create it.
+  if (!div) {
+    var container = document.createElement('div');
+    container.innerHTML = LiveCards.STORY_TEMPLATE;
+    div = container.firstChild;
+    div.setAttribute('id', key);
+    this.storyList.appendChild(div);
+  }
+  if (picUrl) {
+    div.querySelector('.pic').style.backgroundImage = 'url(' + picUrl + ')';
+  }
+  div.querySelector('.name').textContent = name;
+  var messageElement = div.querySelector('.message');
+  if (content) { // If the message is text.
+    messageElement.textContent = content;
+    // Replace all line breaks by <br>.
+    messageElement.innerHTML = messageElement.innerHTML.replace(/\n/g, '<br>');
+  } else if (imageUri) { // If the message is an image.
+    var image = document.createElement('img');
+    image.addEventListener('load', function() {
+      this.storyList.scrollTop = this.storyList.scrollHeight;
+    }.bind(this));
+    this.setImageUrl(imageUri, image);
+    messageElement.innerHTML = '';
+    messageElement.appendChild(image);
+  }
+  // Show the card fading-in.
+  setTimeout(function() {div.classList.add('visible')}, 1);
+  this.storyList.scrollTop = this.storyList.scrollHeight;
+  this.contentStory.focus();
+};
+
 //Add a new card.
 LiveCards.prototype.addNewCard = function() {
   if (this.auth.currentUser) {
@@ -85,18 +174,15 @@ LiveCards.prototype.deleteNewCard = function() {
   }
 };
 
-// Saves a new message on the Firebase DB.
+// Saves a new story on the Firebase DB.
 LiveCards.prototype.saveStory = function(e) {
   e.preventDefault();
-  // Check that the user entered a message and is signed in.
-  // if (this.messageInput.value && this.checkSignedInWithMessage()) {
+  // Check that the user entered a story and is signed in.
   if (this.fileUpload.value || this.titleStory.value || this.contentStory.value) {
     var currentUser = this.auth.currentUser;
     // Add a new message entry to the Firebase Database.
-
-    window.alert('DB Input');
-    this.messagesRef = this.database.ref('book-20170808165000');
-    this.messagesRef.push({
+    this.bookRef = this.database.ref('book-20170808165000');
+    this.bookRef.push({
 
       name: currentUser.displayName,
       photoUrl: currentUser.photoURL || '/images/profile_placeholder.png',
@@ -107,7 +193,7 @@ LiveCards.prototype.saveStory = function(e) {
     }).then(function() {
       // Clear message text field and SEND button state.
       this.deleteNewCard();
-      // LiveCards.resetMaterialTextfield(this.messageInput);
+      // LiveCards.resetMaterialTextfield(this.contentStory);
       // this.toggleButton();
     }.bind(this)).catch(function(error) {
       console.error('Error writing new message to Firebase Database', error);
@@ -144,6 +230,9 @@ LiveCards.prototype.onAuthStateChanged = function(user) {
     this.signOutButton.removeAttribute('hidden');
     this.inputBlock.removeAttribute('hidden');
 
+    // We load currently existing chant messages.
+    this.loadBook();
+
   } else { // User is signed out!
     // Hide sign-out button and input form.
     this.signOutButton.setAttribute('hidden', 'true');
@@ -170,7 +259,7 @@ LiveCards.prototype.checkSignedInWithMessage = function() {
 // Enables or disables the submit button depending on the values of the input
 // fields.
 LiveCards.prototype.toggleButton = function() {
-  if (this.messageInput.value) {
+  if (this.contentStory.value) {
     this.submitButton.removeAttribute('disabled');
   } else {
     this.submitButton.setAttribute('disabled', 'true');
