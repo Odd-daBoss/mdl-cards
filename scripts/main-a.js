@@ -92,11 +92,10 @@ LiveCards.STORY_TEMPLATE =
 
     '<br />' +
 */
-    '<section class="section--center mdl-grid mdl-grid--no-spacing mdl-shadow--2dp">' +
+    '<div class="section--center mdl-grid mdl-grid--no-spacing mdl-shadow--2dp">' +
       '<div class="mdl-card mdl-cell mdl-cell--12-col">' +
-
         '<figure class="mdl-card__media">' +
-          '<img src="https://instagram.fbkk2-3.fna.fbcdn.net/t51.2885-15/s640x640/sh0.08/e35/c214.0.651.651/17882852_1845382215487628_4926213667583688704_n.jpg" alt="" />' +
+          '<img src="https://instagram.fbkk2-3.fna.fbcdn.net/t51.2885-15/e35/17934517_1558048924218919_366218332182937600_n.jpg" alt="" />' +
         '</figure>' +
         '<div class="mdl-card__title mdl-card--expand">' +
           '<h1 class="title mdl-card__title-text mdl-color-text--blue-grey-300"></h1>' +
@@ -105,9 +104,11 @@ LiveCards.STORY_TEMPLATE =
           '<p class="content"></p>' +
         '</div>' +
         '<div class="mdl-card__actions mdl-card--border">' +
-          '<a class="userPic mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect"></a>' +
+          '<div class="userContainer mdl-card__title mdl-card--expand">' +
+            '<div class="userPic"></div>' +
+          '</div>' +
           '<div class="mdl-layout-spacer"></div>' +
-          '<button class="mdl-button mdl-button--icon mdl-button--colored"><i class="material-icons">favorite</i></button>' +
+          '<button class="likeButton mdl-button mdl-button--icon mdl-button--colored"><i class="material-icons">favorite</i></button>' +
         '</div>' +
         '<div class="mdl-card__menu">' +
           '<button class="mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect">' +
@@ -115,7 +116,7 @@ LiveCards.STORY_TEMPLATE =
           '</button>' +
         '</div>' +
       '</div>' +
-    '</section><br />';
+    '</div>';
 
 
 // Displays a Story in the UI.
@@ -123,10 +124,15 @@ LiveCards.prototype.displayStory = function(key, title, content, name, picUrl, i
   var div = document.getElementById(key);
   // If an element for that message does not exists yet we create it.
   if (!div) {
-    var container = document.createElement('div');
+    var container = document.createElement("DIV");
     container.innerHTML = LiveCards.STORY_TEMPLATE;
     div = container.firstChild;
     div.setAttribute('id', key);
+    div.getElementsByClassName("title")[0].textContent = title;
+    div.getElementsByClassName("content")[0].textContent = content;
+    div.getElementsByClassName("userPic")[0].style.backgroundImage = 'url(' + picUrl + ')';
+    var x = div.getElementsByClassName("likeButton")[0];
+    x.setAttribute('id', key+'.like');
     this.storyList.appendChild(div);
   }
   if (picUrl) {

@@ -6,6 +6,8 @@ html, body {
 
 .mdl-grid {
     max-width: 600px;
+    margin-top: 20px;
+
 }
 .mdl-card__media {
     margin: 0;
@@ -39,7 +41,16 @@ html, body {
 .none {
   display: none;
 }
-
+.userPic {
+  position: relative;
+  display: inline-block;
+  background-image: url('/images/profile_placeholder.svg');
+  background-repeat: no-repeat;
+  width: 60px;
+  height: 60px;
+  background-size: 60px;
+  border-radius: 30px;
+}
 img {
   max-width: 100%;
 }
