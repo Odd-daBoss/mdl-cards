@@ -18,7 +18,7 @@ function LiveCards() {
   this.storyForm = document.getElementById('story-form');
 
   // Toggle for the button.
-  var buttonTogglingHandler = this.toggleButton.bind(this);
+  // var buttonTogglingHandler = this.toggleButton.bind(this);
 
   this.storyForm.addEventListener('submit', this.saveStory.bind(this));
   this.addCard.addEventListener('click', this.addNewCard.bind(this));
@@ -27,6 +27,7 @@ function LiveCards() {
   this.imageUpload.addEventListener('change', this.handleFileSelect.bind(this));
 
   this.initFirebase();
+  this.loadBook();
 }
 
 // Sets up shortcuts to Firebase features and initiate firebase auth.
@@ -41,23 +42,27 @@ LiveCards.prototype.initFirebase = function() {
 
 LiveCards.prototype.handleFileSelect = function(event) {
   event.preventDefault();
+  console.log(event.currentTarget);
+  console.log(event.currentTarget.files[0]);
   var file = event.target.files[0];
+  console.log(file);
   // Only process image files.
   if (file.type.match('image.*')) {
 
     var reader = new FileReader();
     // Closure to capture the file information.
     reader.onload = function(e) {
-			fileDisplay.innerHTML = "";
+      fileDisplay.innerHTML = "";
 
-			var img = new Image();
-			img.src = reader.result;
+      var img = new Image();
+      img.src = reader.result;
       img.id = "selected-image";
 
-			fileDisplay.appendChild(img);
-		}
+      fileDisplay.appendChild(img);
+    }
 
-		reader.readAsDataURL(file);
+    reader.readAsDataURL(file);
+    return file;
   }
 };
 
@@ -72,6 +77,7 @@ LiveCards.prototype.loadBook = function() {
   var setStory = function(data) {
     var val = data.val();
     this.displayStory(data.key, val.title, val.content, val.name, val.photoUrl, val.imageUrl);
+    console.log(val.imageUrl);
   }.bind(this);
   this.bookRef.limitToLast(15).on('child_added', setStory);
   this.bookRef.limitToLast(15).on('child_changed', setStory);
@@ -90,7 +96,7 @@ LiveCards.STORY_TEMPLATE =
         '<p class="content"></p>' +
       '</div>' +
       '<div class="mdl-card__actions mdl-card--border">' +
-        '<div class="userContainer mdl-card__title mdl-card--expand">' +
+        '<div class="mdl-card__title mdl-card--expand">' +
           '<div class="userPic"></div>' +
         '</div>' +
         '<div class="mdl-layout-spacer"></div>' +
@@ -104,6 +110,9 @@ LiveCards.STORY_TEMPLATE =
     '</div>' +
   '</div>';
 
+// A loading image URL.
+LiveCards.LOADING_IMAGE_URL = 'https://www.google.com/images/spin-32.gif';
+
 // Displays a Story in the UI.
 LiveCards.prototype.displayStory = function(key, title, content, name, picUrl, imageUri) {
   var div = document.getElementById(key);
@@ -113,7 +122,7 @@ LiveCards.prototype.displayStory = function(key, title, content, name, picUrl, i
     container.innerHTML = LiveCards.STORY_TEMPLATE;
     div = container.firstChild;
     div.setAttribute('id', key);
-/*
+
     if (imageUri) { // If the story has an image.
       var image = document.createElement('img');
       image.addEventListener('load', function() {
@@ -123,7 +132,6 @@ LiveCards.prototype.displayStory = function(key, title, content, name, picUrl, i
       div.getElementsByClassName("storyImage")[0].innerHTML = '';
       div.getElementsByClassName("storyImage")[0].appendChild(image);
     }
-*/
     if (title) { // If the story has a title.
       var htmlTitle = title.replace(/\n/g, '<br>');
       div.getElementsByClassName("title")[0].innerHTML = htmlTitle;
@@ -135,36 +143,13 @@ LiveCards.prototype.displayStory = function(key, title, content, name, picUrl, i
     div.getElementsByClassName("userPic")[0].style.backgroundImage = 'url(' + picUrl + ')';
     var x = div.getElementsByClassName("likeButton")[0];
     x.setAttribute('id', key+'.like');
-    this.storyList.appendChild(div);
+    this.storyList.insertBefore(div,this.storyList.firstChild);
   }
-/*
-  if (picUrl) {
-    div.querySelector('.pic').style.backgroundImage = 'url(' + picUrl + ')';
-  }
-  div.querySelector('.name').textContent = name;
-  var messageElement = div.querySelector('.message');
-  if (content) { // If the message is text.
-    messageElement.textContent = content;
-    // Replace all line breaks by <br>.
-    messageElement.innerHTML = messageElement.innerHTML.replace(/\n/g, '<br>');
-  } else if (imageUri) { // If the message is an image.
-    var image = document.createElement('img');
-    image.addEventListener('load', function() {
-      this.storyList.scrollTop = this.storyList.scrollHeight;
-    }.bind(this));
-    this.setImageUrl(imageUri, image);
-    messageElement.innerHTML = '';
-    messageElement.appendChild(image);
-  }
-  // Show the card fading-in.
-  setTimeout(function() {div.classList.add('visible')}, 1);
-  this.storyList.scrollTop = this.storyList.scrollHeight;
-  this.contentStory.focus
-*/
 };
 
 //Add a new card.
 LiveCards.prototype.addNewCard = function() {
+  scroll(0,0);
   if (this.auth.currentUser) {
     this.inputBlock.removeAttribute('hidden');
   } else {
@@ -174,62 +159,70 @@ LiveCards.prototype.addNewCard = function() {
   }
 };
 
-//Delete the new card -
-//Clear image and form!!
+//Delete the new card and Clear image and form!!
 LiveCards.prototype.deleteNewCard = function() {
-  if (this.auth.currentUser) {
     fileDisplay.innerHTML = "";
     this.storyForm.reset();
     this.inputBlock.setAttribute('hidden', 'true');
+};
+
+// Sets the URL of the given img element with the URL of the image stored in Cloud Storage.
+LiveCards.prototype.setImageUrl = function(imageUri, imgElement) {
+  // If the image is a Cloud Storage URI we fetch the URL.
+  if (imageUri.startsWith('gs://')) {
+    imgElement.src = LiveCards.LOADING_IMAGE_URL; // Display a loading image first.
+    this.storage.refFromURL(imageUri).getMetadata().then(function(metadata) {
+      imgElement.src = metadata.downloadURLs[0];
+    });
+  } else {
+    imgElement.src = imageUri;
   }
 };
 
 // Saves a new story on the Firebase DB.
 LiveCards.prototype.saveStory = function(event) {
-  event.preventDefault();
-  var file = document.getElementById('selected-image').files[0];
-  // Check that the user entered a story and is signed in.
-  if (this.imageUpload.value || this.titleStory.value || this.contentStory.value) {
-    var currentUser = this.auth.currentUser;
-    // Add a new message entry to the Firebase Database.
-    this.bookRef = this.database.ref('book-20170808165000');
-    this.bookRef.push({
+  if (this.auth.currentUser) {
+    event.preventDefault();
+    console.log(event.currentTarget);
+    console.log(event.currentTarget.length);
+    var file = document.getElementById('image-upload').files[0];
+    console.log(file);
+    // Check that the user uploaded image or entered a title or any content.
+    if (this.imageUpload.value || this.titleStory.value || this.contentStory.value) {
+      var currentUser = this.auth.currentUser;
+      // Add a new message entry to the Firebase Database.
+      this.bookRef = this.database.ref('book-20170808165000');
+      this.bookRef.push({
 
-      name: currentUser.displayName,
-      photoUrl: currentUser.photoURL || '/images/profile_placeholder.png',
-      imageUrl: this.imageUpload.name,
-      title: this.titleStory.value,
-      content: this.contentStory.value
+        name: currentUser.displayName,
+        photoUrl: currentUser.photoURL || '/images/profile_placeholder.svg',
+        imageUrl: LiveCards.LOADING_IMAGE_URL,
+        title: this.titleStory.value,
+        content: this.contentStory.value
 
-    }).then(function(data) {
+      }).then(function(data) {
+//        if (file) {
+          // Upload the image to Cloud Storage.
+          var filePath = currentUser.uid + '/' + data.key + '/' + file.name;
+          console.log(filePath);
+          return this.storage.ref(filePath).put(file).then(function(snapshot) {
+              // Get the file's Storage URI and update the image placeholder.
+              var fullPath = snapshot.metadata.fullPath;
+              return data.update({imageUrl: this.storage.ref(fullPath).toString()});
+            }.bind(this));
+//        }
+      }.bind(this)).catch(function(error) {
+            console.error('There was an error uploading a file to Cloud Storage:', error);
+          });
 
-      // Upload the image to Cloud Storage.
-      var filePath = currentUser.uid + '/' + data.key + '/' + file.name;
-      console.log(filePath);
-      return this.storage.ref(filePath).put(file).then(function(snapshot) {
-
-        // Get the file's Storage URI and update the chat message placeholder.
-        var fullPath = snapshot.metadata.fullPath;
-        return data.update({imageUrl: this.storage.ref(fullPath).toString()});
-      }.bind(this));
-    }.bind(this)).catch(function(error) {
-      console.error('There was an error uploading a file to Cloud Storage:', error);
-    });
-
-    // Clear input new story card.
-    this.deleteNewCard();
-  }
+        // Clear input new story card.
+        this.deleteNewCard();
+      }
+    } else {
+      alert("You must sign-in first!");
+    }
 };
-/*
-}).then(function(data) {
-  // Clear message text field and SEND button state.
-  this.deleteNewCard();
-  // LiveCards.resetMaterialTextfield(this.contentStory);
-  // this.toggleButton();
-}.bind(this)).catch(function(error) {
-  console.error('Error writing new message to Firebase Database', error);
-});
-*/
+
 // Signs-in Live Cards.
 LiveCards.prototype.signIn = function() {
   // Sign in Firebase using popup auth and Google as the identity provider.
@@ -240,8 +233,11 @@ LiveCards.prototype.signIn = function() {
 // Signs-out of Live Cards.
 LiveCards.prototype.signOut = function() {
   // Clear form and Sign out of Firebase.
-  this.deleteNewCard();
   this.auth.signOut();
+  this.userPic.style.backgroundImage = "url('/images/profile_placeholder.svg')";
+  this.userName.textContent = 'Not signing in!';
+  this.deleteNewCard();
+  scroll(0,0);
 };
 
 // Triggers when the auth state change for instance when the user signs-in or signs-out.
@@ -260,7 +256,7 @@ LiveCards.prototype.onAuthStateChanged = function(user) {
     this.inputBlock.removeAttribute('hidden');
 
     // We load currently existing chant messages.
-    this.loadBook();
+    // this.loadBook();
 
   } else { // User is signed out!
     // Hide sign-out button and input form.
@@ -269,6 +265,7 @@ LiveCards.prototype.onAuthStateChanged = function(user) {
   }
 };
 
+/*
 // Returns true if user is signed-in. Otherwise false and displays a message.
 LiveCards.prototype.checkSignedInWithMessage = function() {
   // Return true if the user is signed in Firebase
@@ -285,6 +282,7 @@ LiveCards.prototype.checkSignedInWithMessage = function() {
   return false;
 };
 
+
 // Enables or disables the submit button depending on the values of the input
 // fields.
 LiveCards.prototype.toggleButton = function() {
@@ -294,6 +292,7 @@ LiveCards.prototype.toggleButton = function() {
     this.submitButton.setAttribute('disabled', 'true');
   }
 };
+*/
 
 // Checks that the Firebase SDK has been correctly setup and configured.
 LiveCards.prototype.checkSetup = function () {
