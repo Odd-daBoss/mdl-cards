@@ -1,0 +1,659 @@
+<!doctype html>
+<html lang="">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MDL CARDs</title>
+
+    <link rel="stylesheet" href="//fonts.googleapis.com/icon?family=Material+Icons">
+    <link href='http://fonts.googleapis.com/css?family=Roboto:400,300,300italic,500,400italic,700,700italic' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.light_green-red.min.css" />
+    <script src="//storage.googleapis.com/code.getmdl.io/1.0.1/material.min.js"></script>
+
+    <!-- Applied styles -->
+    <link rel="stylesheet" href="/styles/main-a.css">
+  </head>
+
+  <body class="mdl-demo mdl-color--grey-100 mdl-color-text--grey-700 mdl-base">
+    <section hidden id="input-block" class="section--center mdl-grid mdl-grid--no-spacing mdl-shadow--2dp">
+      <div class="mdl-card mdl-cell mdl-cell--12-col">
+
+        <form id="story-form" onSubmit="console.log('Input 1: '+document.getElementById('image-upload').value
+          + ' Input 2: '+document.getElementById('title-story').value
+          + ' Input 3: '+document.getElementById('content-story').value)">
+
+          <div id="input-wrapper">
+            <div id="fileDisplay">
+            </div>
+            <div>
+              <label class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--primary">
+                <i class="material-icons">image_upload</i>
+                <input id="image-upload" class="none" type="file" accept="image/*,capture="camera"/>
+              </lable>
+            </div>
+
+            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+              <input class="mdl-textfield__input" type="text" autocomplete="off" id="title-story"/>
+              <label class="mdl-textfield__label" for="title-story">Title</label>
+            </div><br />
+
+            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+              <textarea class="mdl-textfield__input" type="text" rows="10" id="content-story"></textarea>
+              <label class="mdl-textfield__label" for="content-story">Story</label>
+            </div><br />
+          </div>
+
+          <!-- Border and Action Elements -->
+          <div class="mdl-card__actions mdl-card--border">
+
+            <div id="user-container" class="mdl-card__title mdl-card--expand">
+              <div id="user-pic"></div>
+              <a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect"
+                  href="https://plus.google.com/+UdomsakOdd">
+              <div id="user-name"></div></a>
+            </div>
+            <div class="mdl-layout-spacer"></div>
+            <button id="submit" type="submit" class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect
+              mdl-button--colored mdl-color--accent">
+              <i class="material-icons" role="presentation">send</i>
+            </button>
+          </div>
+        </form>
+
+        <!-- Menu button with Effects -->
+        <div class="mdl-card__menu">
+          <button id="del-card" class="mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect">
+            <i class="material-icons">clear</i>
+          </button>
+        </div>
+
+      </div>
+    </section>
+    <!-- Begin of the card(s) -->
+    <!-- (*) -->
+    <div id="story-list">
+    </div>
+
+    <!-- (A) -->
+    <section class="section--center mdl-grid mdl-grid--no-spacing mdl-shadow--2dp">
+      <div class="mdl-card mdl-cell mdl-cell--12-col">
+        <figure class="mdl-card__media">
+          <div class="mdl-progress mdl-js-progress mdl-progress__indeterminate">
+          </div>
+          <img src="https://instagram.fbkk2-3.fna.fbcdn.net/t51.2885-15/s640x640/sh0.08/e35/c214.0.651.651/17882852_1845382215487628_4926213667583688704_n.jpg" alt="" />
+        </figure>
+        <!-- MDL Card Container -->
+        <div class="mdl-card__title mdl-card--expand">
+          <h1 class="mdl-card__title-text mdl-color-text--blue-grey-300">Talay Noi</h1>
+        </div>
+        <div class="mdl-card__supporting-text">
+          <p>Thale Noi Non-hunting Area (เขตห้ามล่าสัตว์ป่าทะเลน้อย). The first non-hunting area ever founded in Thailand.
+            Interesting things at the Thale Noi Waterfowl Park are the Thale Noi Palace, sea of blooming lotus in the morning,
+            flocks of waterfowls, the nesting and egg-laying grounds of waterfowls at Ao Mo and those at Khuan Thale Mong,
+            Khuan Khi Sian Ranger Station, and the Sala Nang Riam viewpoint. Thale Noi lake is a unique bird breeding place,
+            with over 180 species of birds listed.</p>
+        </div>
+
+        <!-- Border and Action Elements -->
+        <div class="mdl-card__actions mdl-card--border">
+          <a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">
+            #sdeeschill
+          </a>
+          <div class="mdl-layout-spacer"></div>
+          <button class="mdl-button mdl-button--icon mdl-button--colored"><i class="material-icons">favorite</i></button>
+        </div>
+
+        <!-- Menu button with Effects -->
+        <div class="mdl-card__menu">
+          <button class="mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect">
+            <i class="material-icons">share</i>
+          </button>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- (B) -->
+    <section class="section--center mdl-grid mdl-grid--no-spacing mdl-shadow--2dp">
+      <div class="mdl-card mdl-cell mdl-cell--12-col">
+
+        <figure class="mdl-card__media">
+          <img src="/images/20130519-sss-maya-angelou-quotes-1-600x411.jpg" alt="" />
+        </figure>
+        <!-- MDL Card Container -->
+        <div class="mdl-card__title mdl-card--expand">
+          <h1 class="mdl-card__title-text mdl-color-text--blue-grey-300">Super Soul Sunday</h1>
+        </div>
+        <div class="mdl-card__supporting-text">
+          <p>Maya Angelou was an American poet, memoirist, and civil rights activist. She published seven autobiographies,
+          three books of essays, several books of poetry, and was credited with a list of plays, movies, and television shows
+           spanning over 50 years.</p>
+        </div>
+
+        <!-- Border and Action Elements -->
+        <div class="mdl-card__actions mdl-card--border">
+          <a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">
+            St. Louis, MO.
+          </a>
+          <div class="mdl-layout-spacer"></div>
+          <button class="mdl-button mdl-button--icon mdl-button--colored"><i class="material-icons">favorite</i></button>
+        </div>
+
+        <!-- Menu button with Effects -->
+        <div class="mdl-card__menu">
+          <button class="mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect">
+            <i class="material-icons">share</i>
+          </button>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- (C) -->
+    <section class="section--center mdl-grid mdl-grid--no-spacing mdl-shadow--2dp">
+      <div class="mdl-card mdl-cell mdl-cell--12-col">
+
+        <figure class="mdl-card__media">
+          <img src="https://instagram.fbkk2-3.fna.fbcdn.net/t51.2885-15/e35/17934517_1558048924218919_366218332182937600_n.jpg" alt="" />
+        </figure>
+        <!-- MDL Card Container -->
+        <div class="mdl-card__title mdl-card--expand">
+          <h1 class="mdl-card__title-text mdl-color-text--blue-grey-300">SDEE's Life Quotes</h1>
+        </div>
+        <div class="mdl-card__supporting-text">
+          <p><i>"I've learned that people will forget what you said, people will forget what you did,
+            but people will never forget how you made them feel."</i> ~ Maya Angelou (1928 - 2014)</p>
+        </div>
+
+        <!-- Border and Action Elements -->
+        <div class="mdl-card__actions mdl-card--border">
+          <a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">
+            I know why the caged bird sings
+          </a>
+          <div class="mdl-layout-spacer"></div>
+          <button class="mdl-button mdl-button--icon mdl-button--colored"><i class="material-icons">favorite</i></button>
+        </div>
+
+        <!-- Menu button with Effects -->
+        <div class="mdl-card__menu">
+          <button class="mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect">
+            <i class="material-icons">share</i>
+          </button>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Jump arrow here (1)-->
+    <center>
+    <button class="mdl-button mdl-button--fab mdl-button--colored" onclick="location.href='#sec1';"><i class="material-icons">arrow_forward</i></button></center>
+
+    <!-- (D) -->
+    <section class="section--center mdl-grid mdl-grid--no-spacing mdl-shadow--2dp" id="sec1">
+      <div class="mdl-card mdl-cell mdl-cell--12-col">
+
+        <figure class="mdl-card__media">
+          <img src="/images/IMG_20170626_072442_081.jpg" alt="" />
+        </figure>
+        <!-- MDL Card Container -->
+        <div class="mdl-card__title mdl-card--expand">
+          <h1 class="mdl-card__title-text mdl-color-text--blue-grey-300">Monday!</h1>
+        </div>
+        <!--
+        <div class="mdl-card__supporting-text">
+          <p>
+          </p>
+        </div>
+        -->
+
+        <!-- Border and Action Elements -->
+        <div class="mdl-card__actions mdl-card--border">
+          <a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">
+            Park Life
+          </a>
+          <div class="mdl-layout-spacer"></div>
+          <button class="mdl-button mdl-button--icon mdl-button--colored"><i class="material-icons">favorite</i></button>
+        </div>
+
+        <!-- Menu button with Effects -->
+        <div class="mdl-card__menu">
+          <button class="mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect">
+            <i class="material-icons">share</i>
+          </button>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- (E) -->
+    <section class="section--center mdl-grid mdl-grid--no-spacing mdl-shadow--2dp">
+      <div class="mdl-card mdl-cell mdl-cell--12-col">
+
+        <figure class="mdl-card__media">
+          <img src="https://instagram.fbkk2-3.fna.fbcdn.net/t51.2885-15/s640x640/sh0.08/e35/15099377_1611655592472283_8969408937015115776_n.jpg" alt="" />
+        </figure>
+        <!-- MDL Card Container -->
+        <div class="mdl-card__title mdl-card--expand">
+          <h1 class="mdl-card__title-text mdl-color-text--blue-grey-300">BBQ at Chiang Khan</h1>
+        </div>
+        <div class="mdl-card__supporting-text">
+          <p>Street food at Chiang Khan, TH - ความงาม ความเรียบง่าย ความอร่อย ความสงบสุข ร่มเย็น
+            ปลายทางของทริปการเดินทางที่เหมาะเจาะกับช่วงฤดูที่อากาศกำลังหนาวเย็น ที่นี่ มื้อนี้ ที่เมืองเชียงคาน จังหวัดเลย</p>
+        </div>
+
+        <!-- Border and Action Elements -->
+        <div class="mdl-card__actions mdl-card--border">
+          <a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">
+            #sdeesaroi
+          </a>
+          <div class="mdl-layout-spacer"></div>
+          <button class="mdl-button mdl-button--icon mdl-button--colored"><i class="material-icons">favorite</i></button>
+        </div>
+
+        <!-- Menu button with Effects -->
+        <div class="mdl-card__menu">
+          <button class="mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect">
+            <i class="material-icons">share</i>
+          </button>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- (F) -->
+    <section class="section--center mdl-grid mdl-grid--no-spacing mdl-shadow--2dp">
+      <div class="mdl-card mdl-cell mdl-cell--12-col">
+
+        <figure class="mdl-card__media">
+          <img src="/images/sci8.gif" alt="" />
+        </figure>
+        <!-- MDL Card Container
+        <div class="mdl-card__title mdl-card--expand">
+          <h1 class="mdl-card__title-text mdl-color-text--blue-grey-300">BBQ at Chiang Khan</h1>
+        </div>
+        <div class="mdl-card__supporting-text">
+          <p>Street food at Chiang Khan, TH - ความงาม ความเรียบง่าย ความอร่อย ความสงบสุข ร่มเย็น
+            ปลายทางของทริปการเดินทางที่เหมาะเจาะกับช่วงฤดูที่อากาศกำลังหนาวเย็น ที่นี่ มื้อนี้ ที่เมืองเชียงคาน จังหวัดเลย</p>
+        </div>
+        -->
+
+        <!-- Border and Action Elements -->
+        <div class="mdl-card__actions mdl-card--border">
+          <a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">
+            cartoon
+          </a>
+          <div class="mdl-layout-spacer"></div>
+          <button class="mdl-button mdl-button--icon mdl-button--colored"><i class="material-icons">favorite</i></button>
+        </div>
+
+        <!-- Menu button with Effects -->
+        <div class="mdl-card__menu">
+          <button class="mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect">
+            <i class="material-icons">share</i>
+          </button>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Jump arrow here (2)-->
+    <center>
+    <button class="mdl-button mdl-button--fab mdl-button--colored" onclick="location.href='#sec2';"><i class="material-icons">arrow_forward</i></button></center>
+
+    <!-- (0) -->
+    <section class="section--center mdl-grid mdl-grid--no-spacing mdl-shadow--2dp" id="sec2">
+      <div class="mdl-card mdl-cell mdl-cell--12-col">
+
+        <figure class="mdl-card__media">
+          <img src="https://instagram.fbkk2-3.fna.fbcdn.net/t51.2885-15/s640x640/sh0.08/e35/19535217_1749127811798599_6308961316035887104_n.jpg" alt="" />
+        </figure>
+        <!-- MDL Card Container -->
+        <div class="mdl-card__title mdl-card--expand">
+          <h1 class="mdl-card__title-text mdl-color-text--blue-grey-300">Mitakesan (Mount Mitake)</h1>
+        </div>
+        <div class="mdl-card__supporting-text">
+          <p align="right"><i>คิดถึงคนดีของฉันเสมอ<br />
+          กีรติ"</i></p>
+        </div>
+
+        <!-- Border and Action Elements -->
+        <div class="mdl-card__actions mdl-card--border">
+          <a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">
+            #sdeesreading
+          </a>
+          <div class="mdl-layout-spacer"></div>
+          <button class="mdl-button mdl-button--icon mdl-button--colored"><i class="material-icons">favorite</i></button>
+        </div>
+
+        <!-- Menu button with Effects -->
+        <div class="mdl-card__menu">
+          <button class="mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect">
+            <i class="material-icons">share</i>
+          </button>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- (1) -->
+    <section class="section--center mdl-grid mdl-grid--no-spacing mdl-shadow--2dp">
+      <div class="mdl-card mdl-cell mdl-cell--12-col">
+
+        <figure class="mdl-card__media">
+          <img src="/images/development-paradox.jpg" alt="" />
+        </figure>
+        <!-- MDL Card Container -->
+        <div class="mdl-card__title mdl-card--expand">
+          <h1 class="mdl-card__title-text mdl-color-text--blue-grey-300">Our Latest Work</h1>
+        </div>
+        <div class="mdl-card__supporting-text">
+          <p>Project brief: IT project management and system delivery in the FinTech environment.
+          Material Design, WebRTC and Progressive Web Apps are the technology of our choice.</p>
+        </div>
+
+        <!-- Border and Action Elements -->
+        <div class="mdl-card__actions mdl-card--border">
+          <a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">
+            sdee.co
+          </a>
+          <div class="mdl-layout-spacer"></div>
+          <button class="mdl-button mdl-button--icon mdl-button--colored"><i class="material-icons">favorite</i></button>
+        </div>
+
+        <!-- Menu button with Effects -->
+        <div class="mdl-card__menu">
+          <button class="mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect">
+            <i class="material-icons">share</i>
+          </button>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- (2) -->
+    <section class="section--center mdl-grid mdl-grid--no-spacing mdl-shadow--2dp">
+      <div class="mdl-card mdl-cell mdl-cell--12-col">
+
+        <figure class="mdl-card__media">
+          <img src="/images/life-05.jpg" alt="" />
+        </figure>
+        <!-- MDL Card Container -->
+        <div class="mdl-card__title mdl-card--expand">
+          <h1 class="mdl-card__title-text mdl-color-text--blue-grey-300">Life | Live | Love</h1>
+        </div>
+        <div class="mdl-card__supporting-text">
+          <p>Be thankful for everyday that we wake up. Be Cheerful for every breath we take.
+            Be humble for every situation. Be patience and kind to ourself always. Be nice and generous for the surrounding.</p>
+        </div>
+
+        <!-- Border and Action Elements -->
+        <div class="mdl-card__actions mdl-card--border">
+          <a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">
+            short paragraph!
+          </a>
+          <div class="mdl-layout-spacer"></div>
+          <button class="mdl-button mdl-button--icon mdl-button--colored"><i class="material-icons">favorite</i></button>
+        </div>
+
+        <!-- Menu button with Effects -->
+        <div class="mdl-card__menu">
+          <button class="mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect">
+            <i class="material-icons">share</i>
+          </button>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Jump arrow here (3)-->
+    <center>
+    <button class="mdl-button mdl-button--fab mdl-button--colored" onclick="location.href='#sec3';"><i class="material-icons">arrow_forward</i></button></center>
+
+
+    <!-- (2-1) -->
+    <section class="section--center mdl-grid mdl-grid--no-spacing mdl-shadow--2dp" id="sec3">
+      <div class="mdl-card mdl-cell mdl-cell--12-col">
+
+        <figure class="mdl-card__media">
+          <img src="/images/4000007238.jpg" alt="" />
+        </figure>
+        <!-- MDL Card Container -->
+        <div class="mdl-card__title mdl-card--expand">
+          <h1 class="mdl-card__title-text mdl-color-text--blue-grey-300">- ช้าง ช้าง ช้าง ช้าง ช้าง -</h1>
+        </div>
+        <div class="mdl-card__supporting-text">
+          <p>ช้าง ช้าง ช้าง ช้าง ช้าง<br />
+            น้องเคยเห็นช้างหรือเปล่า
+            ช้างมันตัวโตไม่เบา
+            จมูกยาวยาว เรียกว่างวง<br />
+            มีเขี้ยวใต้งวงเรียกว่างา
+            มีหู มีตา หางยาว</p>
+          <p>ช้าง ช้าง ช้าง ช้าง ช้าง<br />
+            น้องเคยเห็นช้างหรือเปล่า
+            ช้างมันตัวโตไม่เบา
+            จมูกยาวยาวเรียกว่างวง<br />
+            มีเขี้ยวใต้งวงเรียกว่างา
+            มีหู มีตา หางยาว</p>
+
+          <p>ช้าง ช้าง ช้าง ช้าง ช้าง<br />
+            น้องเคยเห็นช้างหรือเปล่า
+            ช้างมันตัวโตไม่เบา
+            จมูกยาวยาวเรียกว่างวง<br />
+            มีเขี้ยวใต้งวงเรียกว่างา
+            มีหู มีตา หางยาว</p>
+        </div>
+
+        <!-- Border and Action Elements -->
+        <div class="mdl-card__actions mdl-card--border">
+          <a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">
+            มูลนิธิเพื่อนช้าง
+          </a>
+          <div class="mdl-layout-spacer"></div>
+          <button class="mdl-button mdl-button--icon mdl-button--colored"><i class="material-icons">favorite</i></button>
+        </div>
+
+        <!-- Menu button with Effects -->
+        <div class="mdl-card__menu">
+          <button class="mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect">
+            <i class="material-icons">share</i>
+          </button>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- (3) -->
+    <section class="section--center mdl-grid mdl-grid--no-spacing mdl-shadow--2dp">
+      <div class="mdl-card mdl-cell mdl-cell--12-col">
+
+        <figure class="mdl-card__media">
+          <img src="/images/Tips-to-keep-thai-flowers-get-a-scent-lasting-05.jpg" alt="" />
+        </figure>
+        <!-- MDL Card Container -->
+        <div class="mdl-card__title mdl-card--expand">
+          <h1 class="mdl-card__title-text mdl-color-text--blue-grey-300">ดอกไม้ส่งกลิ่นหอม</h1>
+        </div>
+        <div class="mdl-card__supporting-text">
+          <p>ดอกไม้ส่งกลิ่นหอมทั่วไปในทุกเวลา เช่นเดียวกับ เรา ที่มีความปรารถนาดีต่อกันในทุกวัน เวลา และทุกขณะของลมหายใจ
+          คิดถึง พ่อ แม่ พี่น้อง ปู่-ย่า ตา-ยาย ผู้มีพระคุณทั้งหลาย ตลอดชั่วชีวิตนี้ และตลอดกาลนานเทอญ</p>
+        </div>
+
+        <!-- Border and Action Elements -->
+        <div class="mdl-card__actions mdl-card--border">
+          <a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">
+            กลิ่นของธรรมชาติ
+          </a>
+          <div class="mdl-layout-spacer"></div>
+          <button class="mdl-button mdl-button--icon mdl-button--colored"><i class="material-icons">favorite</i></button>
+        </div>
+
+        <!-- Menu button with Effects -->
+        <div class="mdl-card__menu">
+          <button class="mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect">
+            <i class="material-icons">share</i>
+          </button>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- (4) -->
+    <section class="section--center mdl-grid mdl-grid--no-spacing mdl-shadow--2dp">
+      <div class="mdl-card mdl-cell mdl-cell--12-col">
+
+        <figure class="mdl-card__media">
+          <img src="/images/20150825160807-light-bulb-idea-inspiration.jpg" alt="" />
+        </figure>
+        <!-- MDL Card Container -->
+        <div class="mdl-card__title mdl-card--expand">
+          <h1 class="mdl-card__title-text mdl-color-text--blue-grey-300">Creation and Productivity</h1>
+        </div>
+        <div class="mdl-card__supporting-text">
+          <p>ดอกไม้ส่งกลิ่นหอมทั่วไปในทุกเวลา เช่นเดียวกับ เรา ที่มีความปรารถนาดีต่อกันในทุกวัน เวลา และทุกขณะของลมหายใจ
+          คิดถึง พ่อ แม่ พี่น้อง ปู่-ย่า ตา-ยาย ผู้มีพระคุณทั้งหลาย ตลอดชั่วชีวิตนี้ และตลอดกาลนานเทอญ</p>
+          <p>I am the creativity of the universe. Ray of light guides me all the way to create things, create a better life.
+            I find the purpose of my living - to be a better person, to grow and to learn.</p>
+        </div>
+
+        <!-- Border and Action Elements -->
+        <div class="mdl-card__actions mdl-card--border">
+          <a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">
+            light & เธอคนนั้น
+          </a>
+          <div class="mdl-layout-spacer"></div>
+          <button class="mdl-button mdl-button--icon mdl-button--colored"><i class="material-icons">favorite</i></button>
+        </div>
+
+        <!-- Menu button with Effects -->
+        <div class="mdl-card__menu">
+          <button class="mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect">
+            <i class="material-icons">share</i>
+          </button>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Jump arrow here (4)-->
+    <center>
+    <button class="mdl-button mdl-button--fab mdl-button--colored" onclick="location.href='#sec4';"><i class="material-icons">arrow_forward</i></button></center>
+
+
+    <!-- (5) -->
+    <section class="section--center mdl-grid mdl-grid--no-spacing mdl-shadow--2dp" id="sec4">
+      <div class="mdl-card mdl-cell mdl-cell--12-col">
+
+        <figure class="mdl-card__media">
+          <img src="/images/3d-flowers-hd-wallpapers-free-download.jpg" alt="" />
+        </figure>
+        <!-- MDL Card Container -->
+        <div class="mdl-card__title mdl-card--expand">
+          <h1 class="mdl-card__title-text mdl-color-text--blue-grey-300">Graphic และสีสันอันตระการตา</h1>
+        </div>
+        <div class="mdl-card__supporting-text">
+          <p>Graphic design is a kind of magic: imagination that goes beyond any limitations.
+          Tools are used to create and manupulate lines, dots, emptiness, space and color all together.
+          This world is alive by graphic design and the wildest imagination.</p>
+          <p>ดอกไม้ส่งกลิ่นหอมทั่วไปในทุกเวลา เช่นเดียวกับ เรา ที่มีความปรารถนาดีต่อกันในทุกวัน เวลา และทุกขณะของลมหายใจ
+          คิดถึง พ่อ แม่ พี่น้อง ปู่-ย่า ตา-ยาย ผู้มีพระคุณทั้งหลาย ตลอดชั่วชีวิตนี้ และตลอดกาลนานเทอญ</p>
+          <p>I am the creativity of the universe. Ray of light guides me all the way to create things, create a better life.
+            I find the purpose of my living - to be a better person, to grow and to learn.</p>
+        </div>
+
+        <!-- Border and Action Elements -->
+        <div class="mdl-card__actions mdl-card--border">
+          <a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">
+            graph-fidelity
+          </a>
+          <div class="mdl-layout-spacer"></div>
+          <button class="mdl-button mdl-button--icon mdl-button--colored"><i class="material-icons">favorite</i></button>
+        </div>
+
+        <!-- Menu button with Effects -->
+        <div class="mdl-card__menu">
+          <button class="mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect">
+            <i class="material-icons">share</i>
+          </button>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- (6) -->
+    <section class="section--center mdl-grid mdl-grid--no-spacing mdl-shadow--2dp">
+      <div class="mdl-card mdl-cell mdl-cell--12-col">
+
+        <figure class="mdl-card__media">
+          <img src="/images/people-portrait-faces-photography.jpg" alt="" />
+        </figure>
+        <!-- MDL Card Container -->
+        <div class="mdl-card__title mdl-card--expand">
+          <h1 class="mdl-card__title-text mdl-color-text--blue-grey-300">ความงามที่เตะตา</h1>
+        </div>
+        <div class="mdl-card__supporting-text">
+          <p>บางอย่างที่ปรากฏให้เห็นเป็นความงาม แววตาและวงหน้า รูปปาก คิ้วคาง รวมถึงดอกไม้รายรอบอยู่บนผม
+          บางครั้งทำให้หลงใหลนึกไปต่างๆ นานา ไม่มีการใช้ภาษาพูดจา เพียงแค่สื่อผ่านวงหน้าและแววตาของเธอ</p>
+        </div>
+
+        <!-- Border and Action Elements -->
+        <div class="mdl-card__actions mdl-card--border">
+          <a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">
+            beautiful portrait
+          </a>
+          <div class="mdl-layout-spacer"></div>
+          <button class="mdl-button mdl-button--icon mdl-button--colored"><i class="material-icons">favorite</i></button>
+        </div>
+
+        <!-- Menu button with Effects -->
+        <div class="mdl-card__menu">
+          <button class="mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect">
+            <i class="material-icons">share</i>
+          </button>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- (End) -->
+    <center>
+    <button class="mdl-button mdl-button--fab mdl-button--colored" onclick="location.href='#sec0';"><i class="material-icons">arrow_forward</i></button></center>
+
+    <div id="user-container" class="fixed-buttons">
+      <button id="add-card" class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect
+        mdl-button--colored mdl-shadow--4dp mdl-color--accent">
+        <i class="material-icons" role="presentation">create</i>
+      </button>
+      <button hidden id="sign-out" class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect
+        mdl-button--colored mdl-shadow--4dp mdl-color--accent">
+        <i class="material-icons" role="presentation">exit_to_app</i>
+      </button>
+    </div>
+
+    <!-- Import and configure the Firebase SDK -->
+    <!-- These scripts are made available when the app is served or deployed on Firebase Hosting -->
+    <!-- If you do not want to serve/host your project using Firebase Hosting see https://firebase.google.com/docs/web/setup -->
+    <!--
+    <script src="/__/firebase/4.1.3/firebase.js"></script>
+    <script src="/__/firebase/init.js"></script> -->
+
+    <script src="https://www.gstatic.com/firebasejs/4.1.3/firebase.js"></script>
+    <script>
+      // Initialize Firebase
+      var config = {
+        apiKey: "AIzaSyCYyhVPbqFj7_68jILiONrQWbI4Cxd7i38",
+        authDomain: "live-feed-cards.firebaseapp.com",
+        databaseURL: "https://live-feed-cards.firebaseio.com",
+        projectId: "live-feed-cards",
+        storageBucket: "live-feed-cards.appspot.com",
+        messagingSenderId: "287221611276"
+      };
+      firebase.initializeApp(config);
+    </script>
+
+    <script src="/scripts/main-a.js"></script>
+
+
+  </body>
+</html>

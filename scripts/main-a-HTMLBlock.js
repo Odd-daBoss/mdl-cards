@@ -6,25 +6,25 @@ function LiveCards() {
   // Shortcuts to DOM Elements.
   this.storyList = document.getElementById('story-list');
   this.submitButton = document.getElementById('submit');
-  this.imageUpload = document.getElementById('image-upload');
+  //this.imageUpload = document.getElementById('image-upload');
   this.titleStory = document.getElementById('title-story');
   this.contentStory = document.getElementById('content-story');
   this.userPic = document.getElementById('user-pic');
   this.userName = document.getElementById('user-name');
   this.signOutButton = document.getElementById('sign-out');
   this.addCard = document.getElementById('add-card');
-  this.deleteCard = document.getElementById('del-card');
+  //this.deleteCard = document.getElementById('del-card');
   this.inputBlock = document.getElementById('input-block');
-  this.storyForm = document.getElementById('story-form');
+  //this.storyForm = document.getElementById('story-form');
 
   // Toggle for the button.
   // var buttonTogglingHandler = this.toggleButton.bind(this);
 
-  this.storyForm.addEventListener('submit', this.saveStory.bind(this));
+  //this.storyForm.addEventListener('submit', this.saveStory.bind(this));
   this.addCard.addEventListener('click', this.addNewCard.bind(this));
-  this.deleteCard.addEventListener('click', this.deleteNewCard.bind(this));
+  //this.deleteCard.addEventListener('click', this.deleteNewCard.bind(this));
   this.signOutButton.addEventListener('click', this.signOut.bind(this));
-  this.imageUpload.addEventListener('change', this.handleFileSelect.bind(this));
+  //this.imageUpload.addEventListener('change', this.handleFileSelect.bind(this));
 
   this.initFirebase();
   this.loadBook();
@@ -69,10 +69,7 @@ LiveCards.prototype.loadBook = function() {
   this.bookRef = this.database.ref('book-20170808165000');
   // Make sure we remove all previous listeners.
   this.bookRef.off();
-  // Clear User Name - if not signing in!
-  if (!this.auth.currentUser) {
-    this.userName.textContent = 'Not signing in!';
-  }
+
   // Loads the last number of stories and listen for new ones.
   var setStory = function(data) {
     var val = data.val();
@@ -123,6 +120,49 @@ LiveCards.STORY_TEMPLATE =
     '</div>' +
   '</div>';
 
+// Template for Stories: A Story Template
+LiveCards.INPUT_TEMPLATE =
+  '<div class="section--center mdl-grid mdl-grid--no-spacing mdl-shadow--2dp">' +
+    '<div class="mdl-card mdl-cell mdl-cell--12-col">' +
+      '<form id="story-form">' +
+        '<div id="input-wrapper">' +
+          '<div id="fileDisplay">' +
+          '</div>' +
+          '<div>' +
+            '<label class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--primary">' +
+              '<i class="material-icons">image_upload</i>' +
+              '<input id="image-upload" class="none" type="file" accept="image/*,capture="camera" />' +
+            '</lable>' +
+          '</div>' +
+          '<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">' +
+            '<input class="mdl-textfield__input" type="text" autocomplete="off" id="title-story"/>' +
+            '<label class="mdl-textfield__label" for="title-story">Title</label>' +
+          '</div><br />' +
+          '<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">' +
+            '<textarea class="mdl-textfield__input" type="text" rows="10" id="content-story"></textarea>' +
+            '<label class="mdl-textfield__label" for="content-story">Story</label>' +
+          '</div><br />' +
+        '</div>' +
+        '<div class="mdl-card__actions mdl-card--border">' +
+          '<div id="user-container" class="mdl-card__title mdl-card--expand">' +
+            '<div id="user-pic"></div>' +
+            '<a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect" href="https://plus.google.com/+UdomsakOdd">' +
+            '<div id="user-name"></div></a>' +
+          '</div>' +
+          '<div class="mdl-layout-spacer"></div>' +
+          '<button id="submit" type="submit" class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored mdl-color--accent">' +
+            '<i class="material-icons" role="presentation">send</i>' +
+          '</button>' +
+        '</div>' +
+      '</form>' +
+      '<div class="mdl-card__menu">' +
+        '<button id="del-card" class="mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect">' +
+          '<i class="material-icons">clear</i>' +
+        '</button>' +
+      '</div>' +
+    '</div>' +
+  '</div>';
+
 // Displays a Story in the UI.
 LiveCards.prototype.displayStory = function(key, title, content, name, picUrl, imageUri, date) {
   var div = document.getElementById(key);
@@ -161,11 +201,32 @@ LiveCards.prototype.displayStory = function(key, title, content, name, picUrl, i
   this.storyList.insertBefore(div,this.storyList.firstChild);
 };
 
+//Show & Hide Input block.
+LiveCards.prototype.inputBlockShow = function(show) {
+  var div = document.getElementById("input-block");
+  if (show) {
+    div.innerHTML = LiveCards.INPUT_TEMPLATE;
+    this.deleteCard = document.getElementById('del-card');
+    this.imageUpload = document.getElementById('image-upload');
+    this.storyForm = document.getElementById('story-form');
+
+    this.imageUpload.addEventListener('change', this.handleFileSelect.bind(this));
+    this.deleteCard.addEventListener('click', this.deleteNewCard.bind(this));
+    this.storyForm.addEventListener('submit', this.saveStory.bind(this));
+  } else {
+    this.storyForm.removeEventListener('submit', this.saveStory.bind(this));
+    this.deleteCard.removeEventListener('click', this.deleteNewCard.bind(this));
+    this.storyForm.removeEventListener('submit', this.saveStory.bind(this));
+    div.innerHTML = '';
+  }
+};
+
 //Add a new card.
 LiveCards.prototype.addNewCard = function() {
   scroll(0,0);
   if (this.auth.currentUser) {
-    this.inputBlock.removeAttribute('hidden');
+    //this.inputBlock.removeAttribute('hidden');
+    this.inputBlockShow(1);
   } else {
     // Sign in Firebase using popup auth and Google as the identity provider.
     var provider = new firebase.auth.GoogleAuthProvider();
@@ -177,7 +238,8 @@ LiveCards.prototype.addNewCard = function() {
 LiveCards.prototype.deleteNewCard = function() {
     fileDisplay.innerHTML = "";
     this.storyForm.reset();
-    this.inputBlock.setAttribute('hidden', 'true');
+    // this.inputBlock.setAttribute('hidden', 'true');
+    this.inputBlockShow(0);
 };
 
 // Sets the URL of the given img element with the URL of the image stored in Cloud Storage.
@@ -194,60 +256,61 @@ LiveCards.prototype.setImageUrl = function(imageUri, imgElement) {
 
 // Saves a new story on the Firebase DB.
 LiveCards.prototype.saveStory = function(event) {
-  if (this.auth.currentUser) {
     event.preventDefault();
     var file = document.getElementById('image-upload').files[0];
     if (file) {
-      // Check that the user uploaded image or entered a title or any content.
-      if (this.imageUpload.value || this.titleStory.value || this.contentStory.value) {
-        var currentUser = this.auth.currentUser;
-        var d = new Date();
-        // Add a new message entry to the Firebase Database.
-        this.bookRef = this.database.ref('book-20170808165000');
-        this.bookRef.push({
-          name: currentUser.displayName,
-          photoUrl: currentUser.photoURL || '/images/profile_placeholder.svg',
-          title: this.titleStory.value,
-          content: this.contentStory.value,
-          date: d.toJSON()
-        }).then(function(data) {
-          // Clear input new story card.
-          this.deleteNewCard();
+    // Check that the user uploaded image or entered a title or any content.
+    if (this.imageUpload.value || this.titleStory.value || this.contentStory.value) {
+      var currentUser = this.auth.currentUser;
+      var d = new Date();
+      // Add a new message entry to the Firebase Database.
+      this.bookRef = this.database.ref('book-20170808165000');
+      this.bookRef.push({
 
-          // Upload the image to Cloud Storage.
-          var filePath = currentUser.uid + '/' + data.key + '/' + file.name;
-          return this.storage.ref(filePath).put(file).then(function(snapshot) {
-            // Get the file's Storage URI and update the chat message placeholder.
-            var fullPath = snapshot.metadata.fullPath;
-            return data.update({imageUrl: this.storage.ref(fullPath).toString()});
-            }.bind(this));
-          }.bind(this)).catch(function(error) {
-              console.error('There was an error uploading a file to Cloud Storage:', error);
-            });
-      }
-    } else {
-      // Check that the user uploaded image or entered a title or any content.
-      if (this.titleStory.value || this.contentStory.value) {
-        var currentUser = this.auth.currentUser;
-        var d = new Date();
-        // Add a new message entry to the Firebase Database.
-        this.bookRef = this.database.ref('book-20170808165000');
-        this.bookRef.push({
-          name: currentUser.displayName,
-          photoUrl: currentUser.photoURL || '/images/profile_placeholder.svg',
-          title: this.titleStory.value,
-          content: this.contentStory.value,
-          date: d.toJSON()
-        }).then(function() {
-            // Clear input new story card.
-            this.deleteNewCard();
-          }.bind(this)).catch(function(error) {
-              console.error('Error writing new message to Firebase Database', error);
-            });
-      }
+        name: currentUser.displayName,
+        photoUrl: currentUser.photoURL || '/images/profile_placeholder.svg',
+        title: this.titleStory.value,
+        content: this.contentStory.value,
+        date: d.toJSON()
+
+      }).then(function(data) {
+        // Clear input new story card.
+        this.deleteNewCard();
+
+        // Upload the image to Cloud Storage.
+        var filePath = currentUser.uid + '/' + data.key + '/' + file.name;
+        return this.storage.ref(filePath).put(file).then(function(snapshot) {
+
+          // Get the file's Storage URI and update the chat message placeholder.
+          var fullPath = snapshot.metadata.fullPath;
+          return data.update({imageUrl: this.storage.ref(fullPath).toString()});
+        }.bind(this));
+      }.bind(this)).catch(function(error) {
+        console.error('There was an error uploading a file to Cloud Storage:', error);
+      });
     }
   } else {
-    alert("You must sign-in first!");
+  // Check that the user uploaded image or entered a title or any content.
+  if (this.titleStory.value || this.contentStory.value) {
+    var currentUser = this.auth.currentUser;
+    var d = new Date();
+    // Add a new message entry to the Firebase Database.
+    this.bookRef = this.database.ref('book-20170808165000');
+    this.bookRef.push({
+
+      name: currentUser.displayName,
+      photoUrl: currentUser.photoURL || '/images/profile_placeholder.svg',
+      title: this.titleStory.value,
+      content: this.contentStory.value,
+      date: d.toJSON()
+
+    }).then(function() {
+    // Clear input new story card.
+    this.deleteNewCard();
+    }.bind(this)).catch(function(error) {
+      console.error('Error writing new message to Firebase Database', error);
+    });
+  }
   }
 };
 
@@ -281,12 +344,14 @@ LiveCards.prototype.onAuthStateChanged = function(user) {
 
     // Show sign-out button and input new card form.
     this.signOutButton.removeAttribute('hidden');
-    this.inputBlock.removeAttribute('hidden');
+    //this.inputBlock.removeAttribute('hidden');
+    this.inputBlockShow(1);
 
   } else { // User is signed out!
     // Hide sign-out button and input form.
     this.signOutButton.setAttribute('hidden', 'true');
-    this.inputBlock.setAttribute('hidden', 'true');
+    //this.inputBlock.setAttribute('hidden', 'true');
+    this.inputBlockShow(0);
   }
 };
 
