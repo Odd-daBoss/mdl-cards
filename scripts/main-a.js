@@ -78,8 +78,24 @@ LiveCards.prototype.loadBook = function() {
     var val = data.val();
     this.displayStory(data.key, val.title, val.content, val.name, val.photoUrl, val.imageUrl, val.date);
   }.bind(this);
-  this.bookRef.limitToLast(15).on('child_added', setStory);
-  this.bookRef.limitToLast(15).on('child_changed', setStory);
+    this.bookRef.on('child_changed', function(data, prevChildKey) {
+      var newStory = data.val();
+      console.log('Previous: ' + prevChildKey);
+      console.log('CHGstory: ' + newStory.date);
+    });
+    this.bookRef.on('child_added', function(data, prevChildKey) {
+      var newStory = data.val();
+      console.log('Previous: ' + prevChildKey);
+      console.log('NEWstory: ' + newStory.date);
+    });
+    this.bookRef.on('child_removed', function(data, prevChildKey) {
+      var newStory = data.val();
+      console.log('Previous: ' + prevChildKey);
+      console.log('DeleteNO: ' + newStory.key);
+      console.log('DELstory: ' + newStory.date);
+    });
+    this.bookRef.limitToLast(3).on('child_added', setStory);
+    this.bookRef.limitToLast(3).on('child_changed', setStory);
 //  this.bookRef.on('child_removed', alert("deleted!"));
 //  this.bookRef.limitToLast(15).on('child_removed', function(delete) {
 //    alert(delete);
@@ -132,11 +148,10 @@ LiveCards.prototype.displayStory = function(key, title, content, name, picUrl, i
     container.innerHTML = LiveCards.STORY_TEMPLATE;
     div = container.firstChild;
     div.setAttribute('id', key);
-    if (!imageUri) {
-      div.getElementsByClassName("storyImage")[0].innerHTML = '';
-    }
   }
-  if (imageUri) { // If the story has image.
+  if (!imageUri) { // If the story has NO-image.
+      div.getElementsByClassName("storyImage")[0].innerHTML = '';
+  } else { // If the story has an image.
     var image = document.createElement('img');
     image.src="//:0";
     image.addEventListener('load', function() {
@@ -146,11 +161,15 @@ LiveCards.prototype.displayStory = function(key, title, content, name, picUrl, i
     this.setImageUrl(imageUri, image);
     div.getElementsByClassName("storyImage")[0].appendChild(image);
   }
-  if (title) { // If the story has a title.
+  if (!title) { // If the story has NO-title.
+    div.getElementsByClassName("title")[0].innerHTML = '';
+  } else { // If the story has a title.
     var htmlTitle = title.replace(/\n/g, '<br>');
     div.getElementsByClassName("title")[0].innerHTML = htmlTitle;
   }
-  if (content) { // It the story has a content.
+  if (!content) { // It the story has NO-content.
+    div.getElementsByClassName("content")[0].innerHTML = '';
+  } else { // It the story has a content.
     var htmlContent = content.replace(/\n/g, '<br>');
     div.getElementsByClassName("content")[0].innerHTML = htmlContent;
   }
