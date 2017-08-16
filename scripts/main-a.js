@@ -78,28 +78,13 @@ LiveCards.prototype.loadBook = function() {
     var val = data.val();
     this.displayStory(data.key, val.title, val.content, val.name, val.photoUrl, val.imageUrl, val.date);
   }.bind(this);
-    this.bookRef.on('child_changed', function(data, prevChildKey) {
-      var newStory = data.val();
-      console.log('Previous: ' + prevChildKey);
-      console.log('CHGstory: ' + newStory.date);
+    this.bookRef.on('child_removed', function(data) {
+      var child = document.getElementById(data.key);
+      var parent = document.getElementById("story-list");
+      parent.removeChild(child);
     });
-    this.bookRef.on('child_added', function(data, prevChildKey) {
-      var newStory = data.val();
-      console.log('Previous: ' + prevChildKey);
-      console.log('NEWstory: ' + newStory.date);
-    });
-    this.bookRef.on('child_removed', function(data, prevChildKey) {
-      var newStory = data.val();
-      console.log('Previous: ' + prevChildKey);
-      console.log('DeleteNO: ' + newStory.key);
-      console.log('DELstory: ' + newStory.date);
-    });
-    this.bookRef.limitToLast(3).on('child_added', setStory);
     this.bookRef.limitToLast(3).on('child_changed', setStory);
-//  this.bookRef.on('child_removed', alert("deleted!"));
-//  this.bookRef.limitToLast(15).on('child_removed', function(delete) {
-//    alert(delete);
-//  });
+    this.bookRef.limitToLast(3).on('child_added', setStory);
 };
 
 // Template for Stories: A Story Template
@@ -107,13 +92,6 @@ LiveCards.STORY_TEMPLATE =
   '<div class="section--center mdl-grid mdl-grid--no-spacing mdl-shadow--2dp">' +
     '<div class="mdl-card mdl-cell mdl-cell--12-col">' +
       '<figure class="storyImage mdl-card__media">' +
-        '<div class="materialBar">' +
-        '<div class="mdl-progress mdl-js-progress mdl-progress__indeterminate is-upgraded" data-upgraded=",MaterialProgress" style="width: 100%">' +
-          '<div class="progressbar bar bar1" style="width: 0%;"></div>' +
-          '<div class="bufferbar bar bar2" style="width: 100%;"></div>' +
-          '<div class="auxbar bar bar3" style="width: 0%;"></div>' +
-        '</div>' +
-        '</div>' +
       '</figure>' +
       '<div class="mdl-card__title mdl-card--expand">' +
         '<h1 class="title mdl-card__title-text mdl-color-text--blue-grey-300"></h1>' +
@@ -139,21 +117,46 @@ LiveCards.STORY_TEMPLATE =
     '</div>' +
   '</div>';
 
+LiveCards.IMAGE_PROGRESSBAR =
+  '<div class="materialBar">' +
+  '<div class="mdl-progress mdl-js-progress mdl-progress__indeterminate is-upgraded" data-upgraded=",MaterialProgress" style="width: 100%">' +
+    '<div class="progressbar bar bar1" style="width: 0%;"></div>' +
+    '<div class="bufferbar bar bar2" style="width: 100%;"></div>' +
+    '<div class="auxbar bar bar3" style="width: 0%;"></div>' +
+  '</div>' +
+  '</div>';
+
 // Displays a Story in the UI.
 LiveCards.prototype.displayStory = function(key, title, content, name, picUrl, imageUri, date) {
   var div = document.getElementById(key);
-  // If an element for that message does not exists yet we create it.
+  var storyDate = date;
+  // If an element for that story does not exists yet we create it.
   if (!div) {
+    var fDate = document.getElementById("story-list").getElementsByClassName("dateTime")[0];
+    if (fDate) {
+      var firstDate = fDate.innerHTML;
+    } else {
+      firstDate = 0;
+    }
     var container = document.createElement("DIV");
     container.innerHTML = LiveCards.STORY_TEMPLATE;
     div = container.firstChild;
     div.setAttribute('id', key);
+    div.getElementsByClassName("userPic")[0].style.backgroundImage = 'url(' + picUrl + ')';
+    div.getElementsByClassName("dateTime")[0].innerHTML = date;
+    var x = div.getElementsByClassName("likeButton")[0];
+    x.setAttribute('id', key+'.like');
+    if (storyDate > firstDate) {
+      this.storyList.insertBefore(div,this.storyList.firstChild);
+    } else {
+      this.storyList.appendChild(div);
+    }
   }
   if (!imageUri) { // If the story has NO-image.
       div.getElementsByClassName("storyImage")[0].innerHTML = '';
   } else { // If the story has an image.
+    div.getElementsByClassName("storyImage")[0].innerHTML = LiveCards.IMAGE_PROGRESSBAR;
     var image = document.createElement('img');
-    image.src="//:0";
     image.addEventListener('load', function() {
       // Remove MDL Progress Bar when done!
       div.getElementsByClassName("materialBar")[0].innerHTML = '';
@@ -173,11 +176,6 @@ LiveCards.prototype.displayStory = function(key, title, content, name, picUrl, i
     var htmlContent = content.replace(/\n/g, '<br>');
     div.getElementsByClassName("content")[0].innerHTML = htmlContent;
   }
-  div.getElementsByClassName("userPic")[0].style.backgroundImage = 'url(' + picUrl + ')';
-  div.getElementsByClassName("dateTime")[0].innerHTML = date;
-  var x = div.getElementsByClassName("likeButton")[0];
-  x.setAttribute('id', key+'.like');
-  this.storyList.insertBefore(div,this.storyList.firstChild);
 };
 
 //Add a new card.
@@ -220,7 +218,7 @@ LiveCards.prototype.saveStory = function(event) {
       // Check that the user uploaded image or entered a title or any content.
       if (this.imageUpload.value || this.titleStory.value || this.contentStory.value) {
         var currentUser = this.auth.currentUser;
-        var d = new Date();
+        var d = Date.now();
         // Add a new message entry to the Firebase Database.
         this.bookRef = this.database.ref('book-20170808165000');
         this.bookRef.push({
@@ -228,7 +226,7 @@ LiveCards.prototype.saveStory = function(event) {
           photoUrl: currentUser.photoURL || '/images/profile_placeholder.svg',
           title: this.titleStory.value,
           content: this.contentStory.value,
-          date: d.toJSON()
+          date: d
         }).then(function(data) {
           // Clear input new story card.
           this.deleteNewCard();
