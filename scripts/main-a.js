@@ -78,13 +78,17 @@ LiveCards.prototype.loadBook = function() {
     var val = data.val();
     this.displayStory(data.key, val.title, val.content, val.name, val.photoUrl, val.imageUrl, val.date);
   }.bind(this);
-    this.bookRef.on('child_removed', function(data) {
-      var child = document.getElementById(data.key);
-      var parent = document.getElementById("story-list");
-      parent.removeChild(child);
-    });
-    this.bookRef.limitToLast(3).on('child_changed', setStory);
-    this.bookRef.limitToLast(3).on('child_added', setStory);
+  var chgStory = function(data) {
+    var val = data.val();
+    this.correctStory(data.key, val.title, val.content, val.name, val.photoUrl, val.imageUrl, val.date);
+  }.bind(this);
+  this.bookRef.on('child_removed', function(data) {
+    var child = document.getElementById(data.key);
+    var parent = document.getElementById("story-list");
+    parent.removeChild(child);
+  });
+  this.bookRef.on('child_changed', chgStory);
+  this.bookRef.limitToLast(5).on('child_added', setStory);
 };
 
 // Template for Stories: A Story Template
@@ -175,6 +179,37 @@ LiveCards.prototype.displayStory = function(key, title, content, name, picUrl, i
   } else { // It the story has a content.
     var htmlContent = content.replace(/\n/g, '<br>');
     div.getElementsByClassName("content")[0].innerHTML = htmlContent;
+  }
+};
+
+// Correcting Displayed Story in the UI.
+LiveCards.prototype.correctStory = function(key, title, content, name, picUrl, imageUri, date) {
+  var div = document.getElementById(key);
+  if (div) {
+    if (!imageUri) { // If the story has NO-image.
+      div.getElementsByClassName("storyImage")[0].innerHTML = '';
+    } else { // If the story has an image.
+      div.getElementsByClassName("storyImage")[0].innerHTML = LiveCards.IMAGE_PROGRESSBAR;
+      var image = document.createElement('img');
+      image.addEventListener('load', function() {
+        // Remove MDL Progress Bar when done!
+        div.getElementsByClassName("materialBar")[0].innerHTML = '';
+      }.bind(this));
+      this.setImageUrl(imageUri, image);
+      div.getElementsByClassName("storyImage")[0].appendChild(image);
+    }
+    if (!title) { // If the story has NO-title.
+      div.getElementsByClassName("title")[0].innerHTML = '';
+    } else { // If the story has a title.
+      var htmlTitle = title.replace(/\n/g, '<br>');
+      div.getElementsByClassName("title")[0].innerHTML = htmlTitle;
+    }
+    if (!content) { // It the story has NO-content.
+      div.getElementsByClassName("content")[0].innerHTML = '';
+    } else { // It the story has a content.
+      var htmlContent = content.replace(/\n/g, '<br>');
+      div.getElementsByClassName("content")[0].innerHTML = htmlContent;
+    }
   }
 };
 
