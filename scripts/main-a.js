@@ -16,6 +16,7 @@ function LiveCards() {
   this.deleteCard = document.getElementById('del-card');
   this.inputBlock = document.getElementById('input-block');
   this.storyForm = document.getElementById('story-form');
+//  this.loadNext = document.getElementById('load-next');
 
   // Toggle for the button.
   // var buttonTogglingHandler = this.toggleButton.bind(this);
@@ -25,6 +26,7 @@ function LiveCards() {
   this.deleteCard.addEventListener('click', this.deleteNewCard.bind(this));
   this.signOutButton.addEventListener('click', this.signOut.bind(this));
   this.imageUpload.addEventListener('change', this.handleFileSelect.bind(this));
+//  this.loadNext.addEventListener('click', this.loadMore.bind(this));
 
   this.initFirebase();
   this.loadBook();
@@ -88,8 +90,16 @@ LiveCards.prototype.loadBook = function() {
     parent.removeChild(child);
   });
   this.bookRef.on('child_changed', chgStory);
-  this.bookRef.limitToLast(5).on('child_added', setStory);
+  this.bookRef.orderByKey().startAt("-KrfD1RLddZ8LWV_aLqM").on('child_added', setStory);
 };
+
+//Loads latest stories from the bookRef.
+//LiveCards.prototype.loadMore  = function() {
+//  var n;
+//  for (n = 1; n < 10; n++) {
+//    this.loadBook(n);
+//  }
+//};
 
 // Template for Stories: A Story Template
 LiveCards.STORY_TEMPLATE =
