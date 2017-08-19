@@ -16,7 +16,7 @@ function LiveCards() {
   this.deleteCard = document.getElementById('del-card');
   this.inputBlock = document.getElementById('input-block');
   this.storyForm = document.getElementById('story-form');
-//  this.loadNext = document.getElementById('load-next');
+  this.loadMore = document.getElementById('load-next');
 
   // Toggle for the button.
   // var buttonTogglingHandler = this.toggleButton.bind(this);
@@ -26,7 +26,7 @@ function LiveCards() {
   this.deleteCard.addEventListener('click', this.deleteNewCard.bind(this));
   this.signOutButton.addEventListener('click', this.signOut.bind(this));
   this.imageUpload.addEventListener('change', this.handleFileSelect.bind(this));
-//  this.loadNext.addEventListener('click', this.loadMore.bind(this));
+  this.loadMore.addEventListener('click', this.loadBook.bind(this));
 
   this.initFirebase();
   this.loadBook();
@@ -65,8 +65,10 @@ LiveCards.prototype.handleFileSelect = function(event) {
   }
 };
 
-// Loads latest stories from the bookRef.
+// Loads the stories from the bookRef - n: Lot-Size, type: init or loop.
+//LiveCards.prototype.loadBook = function(n, type) {
 LiveCards.prototype.loadBook = function() {
+  var nextKey;
   // Reference to the /messages/ database path.
   this.bookRef = this.database.ref('book-20170808165000');
   // Make sure we remove all previous listeners.
@@ -76,12 +78,21 @@ LiveCards.prototype.loadBook = function() {
     this.userName.textContent = 'Not signing in!';
   }
   // Loads the last number of stories and listen for new ones.
-  var setStory = function(data) {
+  var setStory = function(data, prevKey) {
     var val = data.val();
+    console.log('ADDed: ' + data.key + ' PrevKEY: ' + prevKey);
+//    if (!prevKey) {
+//      nextKey = data.key;
+//      console.log(nextKey);
+//    } else {
+//      this.displayStory(data.key, val.title, val.content, val.name, val.photoUrl, val.imageUrl, val.date);
+//    }
     this.displayStory(data.key, val.title, val.content, val.name, val.photoUrl, val.imageUrl, val.date);
+
   }.bind(this);
-  var chgStory = function(data) {
+  var chgStory = function(data, prevKey) {
     var val = data.val();
+    console.log('CHGed: ' + data.key + ' PrevKEY: ' + prevKey);
     this.correctStory(data.key, val.title, val.content, val.name, val.photoUrl, val.imageUrl, val.date);
   }.bind(this);
   this.bookRef.on('child_removed', function(data) {
@@ -90,16 +101,25 @@ LiveCards.prototype.loadBook = function() {
     parent.removeChild(child);
   });
   this.bookRef.on('child_changed', chgStory);
-  this.bookRef.orderByKey().startAt("-KrfD1RLddZ8LWV_aLqM").on('child_added', setStory);
-};
+  var n = 10; //Set loading Lot-Size.
+//  this.bookRef.limitToLast(1).on('child_added', setStory);
+  this.bookRef.orderByKey().endAt("-KrieZr0WY2cl00u9KUz").limitToLast(5).on('child_added', setStory);
 
-//Loads latest stories from the bookRef.
-//LiveCards.prototype.loadMore  = function() {
-//  var n;
-//  for (n = 1; n < 10; n++) {
-//    this.loadBook(n);
+
+//  this.bookRef.once('value').then(function(snapshot) {
+//    var m = snapshot.numChildren();
+//    this.bookRef = this.database.ref('book-20170808165000');
+//    this.bookRef.limitToLast(n).startAt(m).on('child_added', setStory);
+//    if (n < m) {
+//      var loadNext = document.getElementById('load-next');
+//      loadNext.removeAttribute('hidden');
+//    }
+//  });
+//  if (nextKey) {
+//    console.log('Next Key!: ' + nextKey);
+//    this.bookRef.limitToLast(n+1).startAt(nextKey).on('child_added', setStory);
 //  }
-//};
+};
 
 // Template for Stories: A Story Template
 LiveCards.STORY_TEMPLATE =
