@@ -26,7 +26,7 @@ function LiveCards() {
   this.deleteCard.addEventListener('click', this.deleteNewCard.bind(this));
   this.signOutButton.addEventListener('click', this.signOut.bind(this));
   this.imageUpload.addEventListener('change', this.handleFileSelect.bind(this));
-  this.loadNext.addEventListener('click', this.loadBook.bind(this));
+  this.loadNext.addEventListener('click', this.loadMore.bind(this));
 
   this.initFirebase();
   this.loadBook();
@@ -65,7 +65,7 @@ LiveCards.prototype.handleFileSelect = function(event) {
   }
 };
 
-// Loads the stories from the bookRef - n: Lot-Size, type: init or loop.
+//Loads the stories from the bookRef - n: Lot-Size, type: init or loop.
 //LiveCards.prototype.loadBook = function(n, type) {
 LiveCards.prototype.loadBook = function() {
   var nextKey;
@@ -78,6 +78,91 @@ LiveCards.prototype.loadBook = function() {
     this.userName.textContent = 'Not signing in!';
   }
   // Loads the last number of stories and listen for new ones.
+  var setStory = function(data, prevKey) {
+    var val = data.val();
+    console.log('ADDed: ' + data.key + ' PrevKEY: ' + prevKey);
+    if (!prevKey) {
+      console.log('!prevKey | i: ' + i);
+      var looperDiv = document.getElementsByClassName("loop-tracker")[0];
+      looperDiv.setAttribute('id',i);
+      var nxtkeyDiv = document.getElementsByClassName("key-tracker")[0];
+      nxtkeyDiv.setAttribute('id',data.key);
+    } else {
+      this.displayStory(data.key, val.title, val.content, val.name, val.photoUrl, val.imageUrl, val.date);
+    }
+  }.bind(this);
+  var chgStory = function(data, prevKey) {
+    var val = data.val();
+    console.log('CHGed: ' + data.key + ' PrevKEY: ' + prevKey);
+    this.correctStory(data.key, val.title, val.content, val.name, val.photoUrl, val.imageUrl, val.date);
+  }.bind(this);
+  this.bookRef.on('child_removed', function(data) {
+    var child = document.getElementById(data.key);
+    var parent = document.getElementById("story-list");
+    parent.removeChild(child);
+  });
+  this.bookRef.on('child_changed', chgStory);
+  this.bookRef.limitToLast(1).on('child_added', setStory);
+  var n = 25; //Set loading Lot-Size.
+  var i = 0; //Set initial loop and initial story.
+  var keyTrk = document.getElementById('key'); //Get loop key-tracker.
+  if (keyTrk) {
+    i++;
+    this.bookRef.once('value').then(function(snapshot) {
+      var m = snapshot.numChildren();
+      if (n >= m) {
+        console.log('n >= m : ' + n + '>' + m);
+        var loadNext = document.getElementById('load-next');
+        loadNext.setAttribute('hidden', 'true');
+      }
+    });
+  }
+
+
+
+
+
+//  this.bookRef.once('value').then(function(snapshot) {
+//    var m = snapshot.numChildren();
+//    this.bookRef = this.database.ref('book-20170808165000');
+//    this.bookRef.limitToLast(n).startAt(m).on('child_added', setStory);
+//    if (n < m) {
+//      var loadNext = document.getElementById('load-next');
+//      loadNext.removeAttribute('hidden');
+//    }
+//  });
+//  if (nextKey) {
+//    console.log('Next Key!: ' + nextKey);
+//    this.bookRef.limitToLast(n+1).startAt(nextKey).on('child_added', setStory);
+//  }
+};
+
+LiveCards.prototype.loadMore = function() {
+  var nextKey;
+  // Reference to the /messages/ database path.
+  this.bookRef = this.database.ref('book-20170808165000');
+  // Make sure we remove all previous listeners.
+  this.bookRef.off();
+  // Clear User Name - if not signing in!
+  if (!this.auth.currentUser) {
+    this.userName.textContent = 'Not signing in!';
+  }
+  // Loads the last number of stories and listen for new ones.
+  var chkStory = function(data, prevKey) {
+    var val = data.val();
+    var loopN = i * n;
+    console.log('loop N: ' + loopN);
+    console.log('ADDed: ' + data.key + ' PrevKEY: ' + prevKey);
+    if (!prevKey) {
+      console.log('!prevKey');
+      var looperDiv = document.getElementsByClassName("loop-tracker")[0];
+      looperDiv.setAttribute('id',i);
+      var nxtkeyDiv = document.getElementsByClassName("key-tracker")[0];
+      nxtkeyDiv.setAttribute('id',data.key);
+    } else {
+      this.displayStory(data.key, val.title, val.content, val.name, val.photoUrl, val.imageUrl, val.date, loopDate);
+    }
+  }.bind(this);
   var setStory = function(data, prevKey) {
     var val = data.val();
     console.log('ADDed: ' + data.key + ' PrevKEY: ' + prevKey);
@@ -103,16 +188,20 @@ LiveCards.prototype.loadBook = function() {
   });
   this.bookRef.on('child_changed', chgStory);
   var n = 5; //Set loading Lot-Size.
-  var i = 1;
+  var m = 0, i = 0; //Set initial loop and initial story.
+  this.bookRef.limitToLast(n+1).on('child_added', setStory);
   var keyTrk = document.getElementById('key'); //Get loop key-tracker.
   if (keyTrk) {
-    this.bookRef.limitToLast(n+1).on('child_added', setStory);
+    i++;
+    this.bookRef.once('value').then(function(snapshot) {
+      m = snapshot.numChildren();
+    });
   } else {
-    var getLopDiv = document.getElementsByClassName("loop-tracker")[0];
-    i = getLopDiv.setAttribute('id',i) + 1;
-    var getKeyDiv = document.getElementsByClassName("key-tracker")[0];
-    var nxtKey = getKeyDiv.setAttribute('id',data.key);
-    this.bookRef.orderByKey().endAt(nxtKey).limitToLast(n+1).on('child_added', setStory);
+    var getLoopDiv = document.getElementsByClassName("loop-tracker")[0];
+    i = getLoopDiv.id;
+    i++;
+    var getNxtKey = document.getElementsByClassName("key-tracker")[0].id;
+    this.bookRef.orderByKey().endAt(getNxtKey).limitToLast(n+1).on('child_added', chkStory);
   }
 
 
@@ -154,10 +243,11 @@ LiveCards.STORY_TEMPLATE =
         '</div>' +
         '<div class="mdl-layout-spacer"></div>' +
         '<button class="likeButton mdl-button mdl-button--icon mdl-button--colored"><i class="material-icons">favorite</i></button>' +
+        '<button class="shareButton mdl-button mdl-button--icon mdl-button--colored"><i class="material-icons">share</i></button>' +
       '</div>' +
       '<div class="mdl-card__menu">' +
         '<button class="mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect">' +
-          '<i class="material-icons">share</i>' +
+          '<i class="material-icons">clear</i>' +
         '</button>' +
       '</div>' +
     '</div>' +
@@ -177,7 +267,7 @@ LiveCards.prototype.displayStory = function(key, title, content, name, picUrl, i
   var div = document.getElementById(key);
   var storyDate = date;
   // If an element for that story does not exists yet we create it.
-  if (!div) {
+  if (!div) { //Displaying new story.
     var fDate = document.getElementById("story-list").getElementsByClassName("dateTime")[0];
     if (fDate) {
       var firstDate = fDate.innerHTML;
