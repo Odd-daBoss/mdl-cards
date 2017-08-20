@@ -50,6 +50,9 @@ html, body {
   background-size: 60px;
   border-radius: 30px;
 }
+.center-wrapper {
+  text-align: center;
+}
 img {
   max-width: 100%;
 }

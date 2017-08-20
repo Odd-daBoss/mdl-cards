@@ -16,7 +16,7 @@ function LiveCards() {
   this.deleteCard = document.getElementById('del-card');
   this.inputBlock = document.getElementById('input-block');
   this.storyForm = document.getElementById('story-form');
-  this.loadMore = document.getElementById('load-next');
+  this.loadNext = document.getElementById('load-next');
 
   // Toggle for the button.
   // var buttonTogglingHandler = this.toggleButton.bind(this);
@@ -26,7 +26,7 @@ function LiveCards() {
   this.deleteCard.addEventListener('click', this.deleteNewCard.bind(this));
   this.signOutButton.addEventListener('click', this.signOut.bind(this));
   this.imageUpload.addEventListener('change', this.handleFileSelect.bind(this));
-  this.loadMore.addEventListener('click', this.loadBook.bind(this));
+  this.loadNext.addEventListener('click', this.loadBook.bind(this));
 
   this.initFirebase();
   this.loadBook();
@@ -81,14 +81,15 @@ LiveCards.prototype.loadBook = function() {
   var setStory = function(data, prevKey) {
     var val = data.val();
     console.log('ADDed: ' + data.key + ' PrevKEY: ' + prevKey);
-//    if (!prevKey) {
-//      nextKey = data.key;
-//      console.log(nextKey);
-//    } else {
-//      this.displayStory(data.key, val.title, val.content, val.name, val.photoUrl, val.imageUrl, val.date);
-//    }
-    this.displayStory(data.key, val.title, val.content, val.name, val.photoUrl, val.imageUrl, val.date);
-
+    if (!prevKey) {
+      console.log('!prevKey');
+      var looperDiv = document.getElementsByClassName("loop-tracker")[0];
+      looperDiv.setAttribute('id',i);
+      var nxtkeyDiv = document.getElementsByClassName("key-tracker")[0];
+      nxtkeyDiv.setAttribute('id',data.key);
+    } else {
+      this.displayStory(data.key, val.title, val.content, val.name, val.photoUrl, val.imageUrl, val.date);
+    }
   }.bind(this);
   var chgStory = function(data, prevKey) {
     var val = data.val();
@@ -101,9 +102,20 @@ LiveCards.prototype.loadBook = function() {
     parent.removeChild(child);
   });
   this.bookRef.on('child_changed', chgStory);
-  var n = 10; //Set loading Lot-Size.
-//  this.bookRef.limitToLast(1).on('child_added', setStory);
-  this.bookRef.orderByKey().endAt("-KrieZr0WY2cl00u9KUz").limitToLast(5).on('child_added', setStory);
+  var n = 5; //Set loading Lot-Size.
+  var i = 1;
+  var keyTrk = document.getElementById('key'); //Get loop key-tracker.
+  if (keyTrk) {
+    this.bookRef.limitToLast(n+1).on('child_added', setStory);
+  } else {
+    var getLopDiv = document.getElementsByClassName("loop-tracker")[0];
+    i = getLopDiv.setAttribute('id',i) + 1;
+    var getKeyDiv = document.getElementsByClassName("key-tracker")[0];
+    var nxtKey = getKeyDiv.setAttribute('id',data.key);
+    this.bookRef.orderByKey().endAt(nxtKey).limitToLast(n+1).on('child_added', setStory);
+  }
+
+
 
 
 //  this.bookRef.once('value').then(function(snapshot) {

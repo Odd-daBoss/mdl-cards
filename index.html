@@ -30,7 +30,7 @@
                   <i class="material-icons">image_upload</i>
                   <input id="image-upload" class="none" type="file" accept="image/*,capture="camera" />
                 </lable>
-            </div>
+              </div>
               <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                 <input class="mdl-textfield__input" type="text" autocomplete="off" id="title-story"/>
                 <label class="mdl-textfield__label" for="title-story">Title</label>
@@ -65,12 +65,13 @@
     <div id="story-list">
     </div>
 
-    <!-- Jump arrow here (3)-->
-    <center>
-    <button id="load-next" hidden class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect
-      mdl-button--colored mdl-shadow--3dp mdl-color--accent">
-      <i class="material-icons">arrow_forward</i>
-    </button></center>
+    <!-- Load more button -->
+    <div id="loop-more" class="center-wrapper">
+      <div id="loop" class="loop-tracker"></div><div id="key" class="key-tracker"></div>
+      <button id="load-next" class="mdl-button mdl-button--icon mdl-button--colored">
+        <i class="material-icons">keyboard_arrow_down</i>
+      </button>
+    </div>
 
     <!-- Display fixed buttons -->
     <div id="user-container" class="fixed-buttons">
