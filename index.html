@@ -63,15 +63,25 @@
 
     <!-- Begin of the card(s) -->
     <div id="show-list">
-      <div id="story-list"></div>
+      <div id="story-list-0"></div>
     </div>
 
     <!-- Load more button -->
     <div id="loop-more" class="center-wrapper">
-      <div id="loop" class="loop-tracker"></div><div id="key" class="key-tracker"></div>
-      <button id="load-next" class="mdl-button mdl-button--icon mdl-button--colored">
-        <i class="material-icons">keyboard_arrow_down</i>
-      </button>
+      <div id="load-next">
+        <div id="loop" class="loop-tracker"></div>
+        <div id="nxt-badge" class="loop-tracker material-icons mdl-badge" data-badge="">import_contacts</div>
+        <button id="next-button" class="mdl-button mdl-button--icon mdl-button--colored">
+          <i class="material-icons">keyboard_arrow_down</i>
+        </button>
+      </div>
+      <div id="load-prev">
+        <button id="prev-button" class="mdl-button mdl-button--icon mdl-button--colored">
+          <i class="material-icons">keyboard_arrow_up</i>
+        </button>
+        <div id="new-badge" class="material-icons mdl-badge" data-badge="">rate_review</div>
+        <div id="key" class="key-tracker"></div>
+      </div>
     </div>
 
     <!-- Display fixed buttons -->
