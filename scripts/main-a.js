@@ -76,19 +76,29 @@ LiveCards.prototype.initBook = function() {
   var nextKey;
   var i = 0; // Set initial loop and initial story.
   var n = 1; // Set initial display lot.
-  var keyTrk = document.getElementById('key'); // Get loop key-tracker.
+  var keyTrk = document.getElementById('tail'); // Get loop key-tail.
   var iniStory = function(data, prevKey) {
     var val = data.val();
-    console.log('iniStory INIed: ' + data.key + ' PrevKEY: ' + prevKey);
-    if (!prevKey) {
-      console.log('!prevKey | i: ' + i);
-      var looperDiv = document.getElementsByClassName("loop-tracker")[0];
-      looperDiv.setAttribute('id',i);
-      var nxtkeyDiv = document.getElementsByClassName("key-tracker")[0];
-      nxtkeyDiv.setAttribute('id','#'+data.key);
-    }
+//    console.log('iniStory INIed: ' + data.key + ' PrevKEY: ' + prevKey);
+//    if (!prevKey) {
+//      console.log('!prevKey | i: ' + i);
+//      var looperDiv = document.getElementsByClassName("loop-tracker")[0];
+//      looperDiv.setAttribute('id',i);
+//      var nxtkeyDiv = document.getElementsByClassName("key-tail")[0];
+//      nxtkeyDiv.setAttribute('id','#'+data.key);
+//    }
     console.log('call initDisplay: ' + data.key);
     this.initDisplay(data.key, val.title, val.content, val.name, val.photoUrl, val.imageUrl, val.date);
+    var looperDiv = document.getElementsByClassName("loop-tracker")[0];
+    looperDiv.setAttribute('id',i);
+    var keyHead = document.getElementsByClassName("key-head")[0];
+    var headID = document.getElementById('story-list-0').firstChild.id;
+    console.log('head :' + headID);
+    keyHead.setAttribute('id','#'+headID);
+    var keyTail = document.getElementsByClassName("key-tail")[0];
+    var tailID = document.getElementById('story-list-0').lastChild.id;
+    console.log('tail :' + tailID);
+    keyTail.setAttribute('id','#'+tailID);
   }.bind(this);
 
   var chgStory = function(data, prevKey) {
@@ -106,6 +116,14 @@ LiveCards.prototype.initBook = function() {
     var parent = document.getElementById(data.key).parentNode; // Get the correct parent HERE!!
     console.log('parent: ' + parent);
     parent.removeChild(child);
+    var keyHead = document.getElementsByClassName("key-head")[0];
+    var headID = document.getElementById('story-list-0').firstChild.id;
+    console.log('head :' + headID);
+    keyHead.setAttribute('id','#'+headID);
+    var keyTail = document.getElementsByClassName("key-tail")[0];
+    var tailID = document.getElementById('story-list-0').lastChild.id;
+    console.log('tail :' + tailID);
+    keyTail.setAttribute('id','#'+tailID);
   });
 
   if (keyTrk) {
@@ -136,9 +154,9 @@ LiveCards.prototype.loopBook = function() {
     this.userName.textContent = 'Not signing in!';
   }
   // Load stories when button click.
-  var n = 6; // Loads story of (n) = lot-size +1
+  var n = 4; // Loads story of (n) = lot-size +1
   var i = document.getElementsByClassName("loop-tracker")[0].id; // Get loop-tracker.
-  var keyTracker = document.getElementsByClassName("key-tracker")[0].id; // Get key-tracker.
+  var keyTracker = document.getElementsByClassName("key-tail")[0].id; // Get key-tail.
   var keyID = keyTracker.substr(1);
   console.log('keyID: ' + keyID);
 
@@ -149,17 +167,62 @@ LiveCards.prototype.loopBook = function() {
       console.log('!prevKey | i: ' + i);
       var looperDiv = document.getElementsByClassName("loop-tracker")[0];
       looperDiv.setAttribute('id',i);
-      var nxtkeyDiv = document.getElementsByClassName("key-tracker")[0];
+      var nxtkeyDiv = document.getElementsByClassName("key-tail")[0];
       nxtkeyDiv.setAttribute('id','#'+data.key);
     }
     console.log('call loadDisplay: ' + data.key);
     this.loadDisplay(data.key, val.title, val.content, val.name, val.photoUrl, val.imageUrl, val.date);
+    var keyHead = document.getElementsByClassName("key-head")[0];
+    var i = 0;
+    var listOk;
+    do {
+      var storyNotEmpty = document.getElementById('story-list-'+i);
+      listOk = 'story-list-' + i;
+      console.log('storyNotEmpty: ' + storyNotEmpty.childNodes.length + ' | i: ' + i);
+      i++;
+    }
+    while (storyNotEmpty.childNodes.length === 0);
+    console.log('list OK: ' + listOk);
+    var headID = document.getElementById(listOk).firstChild.id;
+    console.log('head :' + headID);
+    keyHead.setAttribute('id','#'+headID);
+    var keyTail = document.getElementsByClassName("key-tail")[0];
+    var showLast = document.getElementById('show-list').lastChild.id;
+    if (!showLast) {
+      showLast = 'story-list-0';
+    }
+    var tailID = document.getElementById(showLast).lastChild.id;
+    console.log('tail :' + tailID);
+    keyTail.setAttribute('id','#'+tailID);
   }.bind(this);
 
   var addStory = function(data, prevKey) {
     var val = data.val();
     console.log('newStory ADDed: ' + data.key + ' PrevKEY: ' + prevKey);
     this.liveDisplay(data.key, val.title, val.content, val.name, val.photoUrl, val.imageUrl, val.date);
+
+    var keyHead = document.getElementsByClassName("key-head")[0];
+    var i = 0;
+    var listOk;
+    do {
+      var storyNotEmpty = document.getElementById('story-list-'+i);
+      listOk = 'story-list-' + i;
+      console.log('storyNotEmpty: ' + storyNotEmpty.childNodes.length + ' | i: ' + i);
+      i++;
+    }
+    while (storyNotEmpty.childNodes.length === 0);
+    console.log('list OK: ' + listOk);
+    var headID = document.getElementById(listOk).firstChild.id;
+    console.log('head :' + headID);
+    keyHead.setAttribute('id','#'+headID);
+    var keyTail = document.getElementsByClassName("key-tail")[0];
+    var showLast = document.getElementById('show-list').lastChild.id;
+    if (!showLast) {
+      showLast = 'story-list-0';
+    }
+    var tailID = document.getElementById(showLast).lastChild.id;
+    console.log('tail :' + tailID);
+    keyTail.setAttribute('id','#'+tailID);
   }.bind(this);
 
   var chgStory = function(data, prevKey) {
@@ -192,6 +255,29 @@ LiveCards.prototype.loopBook = function() {
     var parent = document.getElementById(data.key).parentNode; // Get the correct parent HERE!!
     console.log('parent: ' + parent);
     parent.removeChild(child);
+    var keyHead = document.getElementsByClassName("key-head")[0];
+    var i = 0;
+    var listOk;
+    do {
+      var storyNotEmpty = document.getElementById('story-list-'+i);
+      listOk = 'story-list-' + i;
+      console.log('storyNotEmpty: ' + storyNotEmpty.childNodes.length + ' | i: ' + i);
+      i++;
+    }
+    while (storyNotEmpty.childNodes.length === 0);
+    console.log('list OK: ' + listOk);
+    var headID = document.getElementById(listOk).firstChild.id;
+    console.log('head :' + headID);
+    keyHead.setAttribute('id','#'+headID);
+    var keyTail = document.getElementsByClassName("key-tail")[0];
+    var showLast = document.getElementById('show-list').lastChild.id;
+    if (!showLast) {
+      showLast = 'story-list-0';
+    }
+    console.log('show-list-i: ' + showLast);
+    var tailID = document.getElementById(showLast).lastChild.id;
+    console.log('tail :' + tailID);
+    keyTail.setAttribute('id','#'+tailID);
   });
 };
 
@@ -346,6 +432,19 @@ LiveCards.prototype.loadDisplay = function(key, title, content, name, picUrl, im
       }
     }
   }
+  var keyHead = document.getElementsByClassName("key-head")[0];
+  var headID = document.getElementById('story-list-0').firstChild.id;
+  console.log('head :' + headID);
+  keyHead.setAttribute('id','#'+headID);
+  var keyTail = document.getElementsByClassName("key-tail")[0];
+  var showLast = document.getElementById('show-list').lastChild.id;
+  if (!showLast) {
+    showLast = 'story-list-0';
+  }
+  console.log('story-list-i: ' + showLast);
+  var tailID = document.getElementById(showLast).lastChild.id;
+  console.log('tail :' + tailID);
+  keyTail.setAttribute('id','#'+tailID);
 };
 
 // Displays a Story in the UI.
@@ -503,7 +602,7 @@ LiveCards.prototype.saveStory = function(event) {
       // Check that the user uploaded image or entered a title or any content.
       if (this.titleStory.value || this.contentStory.value) {
         var currentUser = this.auth.currentUser;
-        var d = new Date();
+        var d = Date.now();
         // Add a new message entry to the Firebase Database.
         this.bookRef = this.database.ref('book-20170808165000');
         this.bookRef.push({
@@ -511,7 +610,7 @@ LiveCards.prototype.saveStory = function(event) {
           photoUrl: currentUser.photoURL || '/images/profile_placeholder.svg',
           title: this.titleStory.value,
           content: this.contentStory.value,
-          date: d.toJSON()
+          date: d
         }).then(function() {
             // Clear input new story card.
             this.deleteNewCard();
