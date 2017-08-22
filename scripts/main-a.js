@@ -143,26 +143,32 @@ LiveCards.prototype.loopBook = function() {
   console.log('keyID: ' + keyID);
 
   var setStory = function(data, prevKey) {
-      var val = data.val();
-      console.log('setStory Loaded: ' + data.key + ' PrevKEY: ' + prevKey);
-      if (!prevKey) {
-        console.log('!prevKey | i: ' + i);
-        var looperDiv = document.getElementsByClassName("loop-tracker")[0];
-        looperDiv.setAttribute('id',i);
-        var nxtkeyDiv = document.getElementsByClassName("key-tracker")[0];
-        nxtkeyDiv.setAttribute('id','#'+data.key);
-      }
-      console.log('call loadDisplay: ' + data.key);
-      this.loadDisplay(data.key, val.title, val.content, val.name, val.photoUrl, val.imageUrl, val.date);
-    }.bind(this);
+    var val = data.val();
+    console.log('setStory Loaded: ' + data.key + ' PrevKEY: ' + prevKey);
+    if (!prevKey) {
+      console.log('!prevKey | i: ' + i);
+      var looperDiv = document.getElementsByClassName("loop-tracker")[0];
+      looperDiv.setAttribute('id',i);
+      var nxtkeyDiv = document.getElementsByClassName("key-tracker")[0];
+      nxtkeyDiv.setAttribute('id','#'+data.key);
+    }
+    console.log('call loadDisplay: ' + data.key);
+    this.loadDisplay(data.key, val.title, val.content, val.name, val.photoUrl, val.imageUrl, val.date);
+  }.bind(this);
 
-    var chgStory = function(data, prevKey) {
-      var val = data.val();
-      console.log('chgStory CHGed: ' + data.key + ' PrevKEY: ' + prevKey);
-      this.editDisplay(data.key, val.title, val.content, val.name, val.photoUrl, val.imageUrl, val.date);
-    }.bind(this);
+  var addStory = function(data, prevKey) {
+    var val = data.val();
+    console.log('newStory ADDed: ' + data.key + ' PrevKEY: ' + prevKey);
+    this.liveDisplay(data.key, val.title, val.content, val.name, val.photoUrl, val.imageUrl, val.date);
+  }.bind(this);
 
-  i++;
+  var chgStory = function(data, prevKey) {
+    var val = data.val();
+    console.log('chgStory CHGed: ' + data.key + ' PrevKEY: ' + prevKey);
+    this.editDisplay(data.key, val.title, val.content, val.name, val.photoUrl, val.imageUrl, val.date);
+  }.bind(this);
+
+  i++; // Read block of (n) stories.
   this.bookRef.orderByKey().endAt(keyID).limitToLast(n).on('child_added', setStory);
   this.bookRef.once('value').then(function(snapshot) {
     var m = snapshot.numChildren();
@@ -176,6 +182,16 @@ LiveCards.prototype.loopBook = function() {
       var prevIcon = document.getElementById('nxt-badge');
       prevIcon.setAttribute('data-badge', alertStory);
     }
+  });
+  // Listen to: newly added * changed * removed.
+  this.bookRef.limitToLast(1).on('child_added', addStory);
+  this.bookRef.on('child_changed', chgStory);
+  this.bookRef.on('child_removed', function(data) {
+    console.log('child_removed: ' + data.key);
+    var child = document.getElementById(data.key);
+    var parent = document.getElementById(data.key).parentNode; // Get the correct parent HERE!!
+    console.log('parent: ' + parent);
+    parent.removeChild(child);
   });
 };
 
@@ -286,50 +302,61 @@ LiveCards.prototype.loadDisplay = function(key, title, content, name, picUrl, im
     showList.appendChild(loopList);
   }
   var div = document.getElementById(key); // Get story div.
+  var storyDate = date; // Get story date.
   if (!div) { // If an element for that story does not exists yet we create it.
-    var container = document.createElement("DIV");
-    container.innerHTML = LiveCards.STORY_TEMPLATE;
-    div = container.firstChild;
-    div.setAttribute('id', key);
-    div.getElementsByClassName("userPic")[0].style.backgroundImage = 'url(' + picUrl + ')';
-    div.getElementsByClassName("dateTime")[0].innerHTML = date;
-    var x = div.getElementsByClassName("likeButton")[0];
-    x.setAttribute('id', key+'.like');
-    loopList.insertBefore(div,loopList.firstChild);
-  }
-  if (!imageUri) { // If the story has NO-image.
-      div.getElementsByClassName("storyImage")[0].innerHTML = '';
-  } else { // If the story has an image.
-    div.getElementsByClassName("storyImage")[0].innerHTML = LiveCards.IMAGE_PROGRESSBAR;
-    var image = document.createElement('img');
-    image.addEventListener('load', function() {
-      // Remove MDL Progress Bar when done!
-      div.getElementsByClassName("materialBar")[0].innerHTML = '';
-    }.bind(this));
-    this.setImageUrl(imageUri, image);
-    div.getElementsByClassName("storyImage")[0].appendChild(image);
-  }
-  if (!title) { // If the story has NO-title.
-    div.getElementsByClassName("title")[0].innerHTML = '';
-  } else { // If the story has a title.
-    var htmlTitle = title.replace(/\n/g, '<br>');
-    div.getElementsByClassName("title")[0].innerHTML = htmlTitle;
-  }
-  if (!content) { // It the story has NO-content.
-    div.getElementsByClassName("content")[0].innerHTML = '';
-  } else { // It the story has a content.
-    var htmlContent = content.replace(/\n/g, '<br>');
-    div.getElementsByClassName("content")[0].innerHTML = htmlContent;
+    var fDate = document.getElementById(listName).getElementsByClassName("dateTime")[0];
+    if (fDate) {
+      var firstDate = fDate.innerHTML;
+    } else {
+      firstDate = 0;
+    }
+    if (storyDate > firstDate) {
+      var container = document.createElement("DIV");
+      container.innerHTML = LiveCards.STORY_TEMPLATE;
+      div = container.firstChild;
+      div.setAttribute('id', key);
+      div.getElementsByClassName("userPic")[0].style.backgroundImage = 'url(' + picUrl + ')';
+      div.getElementsByClassName("dateTime")[0].innerHTML = date;
+      var x = div.getElementsByClassName("likeButton")[0];
+      x.setAttribute('id', key+'.like');
+      loopList.insertBefore(div,loopList.firstChild);
+      if (!imageUri) { // If the story has NO-image.
+        div.getElementsByClassName("storyImage")[0].innerHTML = '';
+      } else { // If the story has an image.
+        div.getElementsByClassName("storyImage")[0].innerHTML = LiveCards.IMAGE_PROGRESSBAR;
+        var image = document.createElement('img');
+        image.addEventListener('load', function() {
+          // Remove MDL Progress Bar when done!
+          div.getElementsByClassName("materialBar")[0].innerHTML = '';
+        }.bind(this));
+        this.setImageUrl(imageUri, image);
+        div.getElementsByClassName("storyImage")[0].appendChild(image);
+      }
+      if (!title) { // If the story has NO-title.
+        div.getElementsByClassName("title")[0].innerHTML = '';
+      } else { // If the story has a title.
+        var htmlTitle = title.replace(/\n/g, '<br>');
+        div.getElementsByClassName("title")[0].innerHTML = htmlTitle;
+      }
+      if (!content) { // It the story has NO-content.
+        div.getElementsByClassName("content")[0].innerHTML = '';
+      } else { // It the story has a content.
+        var htmlContent = content.replace(/\n/g, '<br>');
+        div.getElementsByClassName("content")[0].innerHTML = htmlContent;
+      }
+    }
   }
 };
 
 // Displays a Story in the UI.
 LiveCards.prototype.liveDisplay = function(key, title, content, name, picUrl, imageUri, date) {
+  var listOne = document.getElementById("story-list-1"); // Check existing of story-list-1.
+  console.log('live key* :' + key);
+  console.log('live title* :' + title);
   var div = document.getElementById(key);
-  var storyDate = date;
-  // If an element for that story does not exists yet we create it.
+  var storyDate = date; // If an element for that story does not exists yet we create it.
   if (!div) { //Displaying new story.
-    var fDate = document.getElementById("story-list").getElementsByClassName("dateTime")[0];
+    var fDate = document.getElementById("story-list-0").getElementsByClassName("dateTime")[0];
     if (fDate) {
       var firstDate = fDate.innerHTML;
     } else {
@@ -344,9 +371,11 @@ LiveCards.prototype.liveDisplay = function(key, title, content, name, picUrl, im
     var x = div.getElementsByClassName("likeButton")[0];
     x.setAttribute('id', key+'.like');
     if (storyDate > firstDate) {
-      this.storyList.insertBefore(div,this.storyList.firstChild);
+      this.storyList0.insertBefore(div,this.storyList0.firstChild);
     } else {
-      this.storyList.appendChild(div);
+      if (!listOne) { // Continue only if there is -NO- story-list-1.
+        this.storyList0.appendChild(div);
+      }
     }
   }
   if (!imageUri) { // If the story has NO-image.
