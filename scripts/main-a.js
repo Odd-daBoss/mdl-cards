@@ -111,13 +111,14 @@ LiveCards.prototype.initBook = function() {
   if (keyTrk) {
     this.bookRef.once('value').then(function(snapshot) {
       var m = snapshot.numChildren();
-      if (n >= m) {
+      var alertStory = m - i*n - 1;
+      if (alertStory <= 0) {
         var loadNext = document.getElementById('load-next');
         loadNext.setAttribute('hidden', 'true');
-          console.log('n >= m : ' + n + '>=' + m);
+          console.log('alertStory <= 0');
       } else {
-        console.log('n < m : ' + n + '<' + m);
-        var alertStory = m - i*n - 1;
+        console.log('Story: ' + alertStory);
+
         var prevIcon = document.getElementById('nxt-badge');
         prevIcon.setAttribute('data-badge', alertStory);
       }
@@ -172,13 +173,14 @@ LiveCards.prototype.loopBook = function() {
   this.bookRef.orderByKey().endAt(keyID).limitToLast(n).on('child_added', setStory);
   this.bookRef.once('value').then(function(snapshot) {
     var m = snapshot.numChildren();
-    if (n >= m) {
+    var alertStory = m - i*n;
+    if (alertStory <= 0) {
       var loadNext = document.getElementById('load-next');
       loadNext.setAttribute('hidden', 'true');
-      console.log('n >= m : ' + n + '>=' + m);
+        console.log('alertStory <= 0');
     } else {
-      console.log('n < m : ' + n + '<' + m);
-      var alertStory = m - i*(n-1) - 1;
+      console.log('Story: ' + alertStory);
+
       var prevIcon = document.getElementById('nxt-badge');
       prevIcon.setAttribute('data-badge', alertStory);
     }
