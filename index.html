@@ -68,20 +68,20 @@
 
     <!-- Load more button -->
     <div id="loop-more" class="center-wrapper">
-      <div id="load-next">
+      <span id="load-next">
         <div id="loop" class="loop-tracker"></div>
         <div id="nxt-badge" class="loop-tracker material-icons mdl-badge" data-badge="">import_contacts</div>
         <button id="next-button" class="mdl-button mdl-button--icon mdl-button--colored">
           <i class="material-icons">keyboard_arrow_down</i>
         </button>
-      </div>
-      <div id="load-prev">
-        <button id="prev-button" class="mdl-button mdl-button--icon mdl-button--colored">
+      </span>
+      <span id="load-prev" hidden>
+        <button id="prev-button" class="mdl-button mdl-button--icon mdl-button--colored" onclick="location.href='#show-list';">
           <i class="material-icons">keyboard_arrow_up</i>
         </button>
-        <div id="new-badge" class="material-icons mdl-badge" data-badge="">rate_review</div>
+        <div id="new-badge" class="material-icons mdl-badge" data-badge="-1">rate_review</div>
         <div id="key" class="key-tracker"></div>
-      </div>
+      </span>
     </div>
 
     <!-- Display fixed buttons -->

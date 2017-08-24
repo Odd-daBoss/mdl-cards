@@ -51,6 +51,8 @@ html, body {
   border-radius: 30px;
 }
 .center-wrapper {
+  padding: 1em;
+  margin: 3px;
   text-align: center;
 }
 img {

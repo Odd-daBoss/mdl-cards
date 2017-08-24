@@ -17,6 +17,7 @@ function LiveCards() {
   this.inputBlock = document.getElementById('input-block');
   this.storyForm = document.getElementById('story-form');
   this.nextButton = document.getElementById('next-button');
+  this.prevButton = document.getElementById('prev-button');
 
   // Toggle for the button.
   // var buttonTogglingHandler = this.toggleButton.bind(this);
@@ -27,6 +28,7 @@ function LiveCards() {
   this.signOutButton.addEventListener('click', this.signOut.bind(this));
   this.imageUpload.addEventListener('change', this.handleFileSelect.bind(this));
   this.nextButton.addEventListener('click', this.loopBook.bind(this));
+  this.prevButton.addEventListener('click', this.gotoBook.bind(this));
 
   this.initFirebase();
   this.initBook();
@@ -65,6 +67,13 @@ LiveCards.prototype.handleFileSelect = function(event) {
   }
 };
 
+LiveCards.prototype.gotoBook = function() {
+  var newIcon = document.getElementById('new-badge');
+  newIcon.setAttribute('data-badge', -1);
+  var loadPrev = document.getElementById('load-prev');
+  loadPrev.setAttribute('hidden', 'true');
+};
+
 //Loads the stories from the bookRef - n: Lot-Size, type: init or loop.
 LiveCards.prototype.initBook = function() {
   this.bookRef = this.database.ref('book-20170808165000'); // Reference to the database path.
@@ -89,6 +98,15 @@ LiveCards.prototype.initBook = function() {
     }
     console.log('call initDisplay: ' + data.key);
     this.initDisplay(data.key, val.title, val.content, val.name, val.photoUrl, val.imageUrl, val.date);
+    var newStory = document.getElementById('new-badge').getAttribute("data-badge");
+    newStory++;
+    console.log('new story: ' + newStory);
+    var newIcon = document.getElementById('new-badge');
+    newIcon.setAttribute('data-badge', newStory);
+    var loadPrev = document.getElementById('load-prev');
+    if (newStory > 0) {
+      loadPrev.removeAttribute('hidden');
+    }
   }.bind(this);
 
   var chgStory = function(data, prevKey) {
@@ -115,10 +133,9 @@ LiveCards.prototype.initBook = function() {
       if (alertStory <= 0) {
         var loadNext = document.getElementById('load-next');
         loadNext.setAttribute('hidden', 'true');
-          console.log('alertStory <= 0');
+        console.log('alertStory <= 0');
       } else {
         console.log('Story: ' + alertStory);
-
         var prevIcon = document.getElementById('nxt-badge');
         prevIcon.setAttribute('data-badge', alertStory);
       }
@@ -161,6 +178,15 @@ LiveCards.prototype.loopBook = function() {
     var val = data.val();
     console.log('newStory ADDed: ' + data.key + ' PrevKEY: ' + prevKey);
     this.liveDisplay(data.key, val.title, val.content, val.name, val.photoUrl, val.imageUrl, val.date);
+    var newStory = document.getElementById('new-badge').getAttribute("data-badge");
+    newStory++;
+    console.log('new story: ' + newStory);
+    var newIcon = document.getElementById('new-badge');
+    newIcon.setAttribute('data-badge', newStory);
+    var loadPrev = document.getElementById('load-prev');
+    if (newStory > 0) {
+      loadPrev.removeAttribute('hidden');
+    }
   }.bind(this);
 
   var chgStory = function(data, prevKey) {
@@ -195,6 +221,11 @@ LiveCards.prototype.loopBook = function() {
     console.log('parent: ' + parent);
     parent.removeChild(child);
   });
+  var newStory = document.getElementById('new-badge').getAttribute("data-badge");
+  newStory--;
+  console.log('new story(-): ' + newStory);
+  var newIcon = document.getElementById('new-badge');
+  newIcon.setAttribute('data-badge', newStory);
 };
 
 // Template for Stories: A Story Template
@@ -505,7 +536,7 @@ LiveCards.prototype.saveStory = function(event) {
       // Check that the user uploaded image or entered a title or any content.
       if (this.titleStory.value || this.contentStory.value) {
         var currentUser = this.auth.currentUser;
-        var d = new Date();
+        var d = Date.now();
         // Add a new message entry to the Firebase Database.
         this.bookRef = this.database.ref('book-20170808165000');
         this.bookRef.push({
@@ -513,7 +544,7 @@ LiveCards.prototype.saveStory = function(event) {
           photoUrl: currentUser.photoURL || '/images/profile_placeholder.svg',
           title: this.titleStory.value,
           content: this.contentStory.value,
-          date: d.toJSON()
+          date: d
         }).then(function() {
             // Clear input new story card.
             this.deleteNewCard();
@@ -557,7 +588,7 @@ LiveCards.prototype.onAuthStateChanged = function(user) {
 
     // Show sign-out button and input new card form.
     this.signOutButton.removeAttribute('hidden');
-    this.inputBlock.removeAttribute('hidden');
+    // this.inputBlock.removeAttribute('hidden');
 
   } else { // User is signed out!
     // Hide sign-out button and input form.
