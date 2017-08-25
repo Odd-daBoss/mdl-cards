@@ -30,7 +30,7 @@
                   <i class="material-icons">image_upload</i>
                   <input id="image-upload" class="none" type="file" accept="image/*,capture="camera" />
                 </lable>
-            </div>
+              </div>
               <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                 <input class="mdl-textfield__input" type="text" autocomplete="off" id="title-story"/>
                 <label class="mdl-textfield__label" for="title-story">Title</label>
@@ -62,17 +62,36 @@
     </div>
 
     <!-- Begin of the card(s) -->
-    <div id="story-list">
+    <div id="show-list">
+      <div id="story-list-0"></div>
+    </div>
+
+    <!-- Load more button -->
+    <div id="loop-more" class="center-wrapper">
+      <span id="load-next">
+        <div id="loop" class="loop-tracker"></div>
+        <div id="nxt-badge" class="loop-tracker material-icons mdl-badge" data-badge="">import_contacts</div>
+        <button id="next-button" class="mdl-button mdl-button--icon mdl-button--colored">
+          <i class="material-icons">keyboard_arrow_down</i>
+        </button>
+      </span>
+      <span id="load-prev" hidden>
+        <button id="prev-button" class="mdl-button mdl-button--icon mdl-button--colored" onclick="location.href='#show-list';">
+          <i class="material-icons">keyboard_arrow_up</i>
+        </button>
+        <div id="new-badge" class="material-icons mdl-badge" data-badge="-1">rate_review</div>
+        <div id="key" class="key-tracker"></div>
+      </span>
     </div>
 
     <!-- Display fixed buttons -->
     <div id="user-container" class="fixed-buttons">
       <button id="add-card" class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect
-        mdl-button--colored mdl-shadow--4dp mdl-color--accent">
+        mdl-button--colored mdl-shadow--3dp mdl-color--accent">
         <i class="material-icons" role="presentation">create</i>
       </button>
       <button hidden id="sign-out" class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect
-        mdl-button--colored mdl-shadow--4dp mdl-color--accent">
+        mdl-button--colored mdl-shadow--3dp mdl-color--accent">
         <i class="material-icons" role="presentation">exit_to_app</i>
       </button>
     </div>

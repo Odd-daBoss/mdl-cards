@@ -4,7 +4,7 @@ function LiveCards() {
   this.checkSetup();
 
   // Shortcuts to DOM Elements.
-  this.storyList = document.getElementById('story-list');
+  this.storyList0 = document.getElementById('story-list-0');
   this.submitButton = document.getElementById('submit');
   this.imageUpload = document.getElementById('image-upload');
   this.titleStory = document.getElementById('title-story');
@@ -16,6 +16,8 @@ function LiveCards() {
   this.deleteCard = document.getElementById('del-card');
   this.inputBlock = document.getElementById('input-block');
   this.storyForm = document.getElementById('story-form');
+  this.nextButton = document.getElementById('next-button');
+  this.prevButton = document.getElementById('prev-button');
 
   // Toggle for the button.
   // var buttonTogglingHandler = this.toggleButton.bind(this);
@@ -25,9 +27,11 @@ function LiveCards() {
   this.deleteCard.addEventListener('click', this.deleteNewCard.bind(this));
   this.signOutButton.addEventListener('click', this.signOut.bind(this));
   this.imageUpload.addEventListener('change', this.handleFileSelect.bind(this));
+  this.nextButton.addEventListener('click', this.loopBook.bind(this));
+  this.prevButton.addEventListener('click', this.gotoBook.bind(this));
 
   this.initFirebase();
-  this.loadBook();
+  this.initBook();
 }
 
 // Sets up shortcuts to Firebase features and initiate firebase auth.
@@ -63,8 +67,84 @@ LiveCards.prototype.handleFileSelect = function(event) {
   }
 };
 
-// Loads latest stories from the bookRef.
-LiveCards.prototype.loadBook = function() {
+LiveCards.prototype.gotoBook = function() {
+  var newIcon = document.getElementById('new-badge');
+  newIcon.setAttribute('data-badge', -1);
+  var loadPrev = document.getElementById('load-prev');
+  loadPrev.setAttribute('hidden', 'true');
+};
+
+//Loads the stories from the bookRef - n: Lot-Size, type: init or loop.
+LiveCards.prototype.initBook = function() {
+  this.bookRef = this.database.ref('book-20170808165000'); // Reference to the database path.
+  this.bookRef.off(); // Make sure we remove all previous listeners.
+  if (!this.auth.currentUser) { // Clear User Name - if not signing in!
+    this.userName.textContent = 'Not signing in!';
+  }
+  // Initial loads the last number of stories and listen for new ones.
+  var nextKey;
+  var i = 0; // Set initial loop and initial story.
+  var n = 1; // Set initial display lot.
+  var keyTrk = document.getElementById('key'); // Get loop key-tracker.
+  var iniStory = function(data, prevKey) {
+    var val = data.val();
+    console.log('iniStory INIed: ' + data.key + ' PrevKEY: ' + prevKey);
+    if (!prevKey) {
+      console.log('!prevKey | i: ' + i);
+      var looperDiv = document.getElementsByClassName("loop-tracker")[0];
+      looperDiv.setAttribute('id',i);
+      var nxtkeyDiv = document.getElementsByClassName("key-tracker")[0];
+      nxtkeyDiv.setAttribute('id','#'+data.key);
+    }
+    console.log('call initDisplay: ' + data.key);
+    this.initDisplay(data.key, val.title, val.content, val.name, val.photoUrl, val.imageUrl, val.date);
+    var newStory = document.getElementById('new-badge').getAttribute("data-badge");
+    newStory++;
+    console.log('new story: ' + newStory);
+    var newIcon = document.getElementById('new-badge');
+    newIcon.setAttribute('data-badge', newStory);
+    var loadPrev = document.getElementById('load-prev');
+    if (newStory > 0) {
+      loadPrev.removeAttribute('hidden');
+    }
+  }.bind(this);
+
+  var chgStory = function(data, prevKey) {
+    var val = data.val();
+    console.log('chgStory CHGed: ' + data.key + ' PrevKEY: ' + prevKey);
+    this.editDisplay(data.key, val.title, val.content, val.name, val.photoUrl, val.imageUrl, val.date);
+  }.bind(this);
+
+  // Read the last (1) story and listen to: added * changed * removed.
+  this.bookRef.limitToLast(n).on('child_added', iniStory);
+  this.bookRef.on('child_changed', chgStory);
+  this.bookRef.on('child_removed', function(data) {
+    console.log('child_removed: ' + data.key);
+    var child = document.getElementById(data.key);
+    var parent = document.getElementById(data.key).parentNode; // Get the correct parent HERE!!
+    console.log('parent: ' + parent);
+    parent.removeChild(child);
+  });
+
+  if (keyTrk) {
+    this.bookRef.once('value').then(function(snapshot) {
+      var m = snapshot.numChildren();
+      var alertStory = m - i*n - 1;
+      if (alertStory <= 0) {
+        var loadNext = document.getElementById('load-next');
+        loadNext.setAttribute('hidden', 'true');
+        console.log('alertStory <= 0');
+      } else {
+        console.log('Story: ' + alertStory);
+        var prevIcon = document.getElementById('nxt-badge');
+        prevIcon.setAttribute('data-badge', alertStory);
+      }
+    });
+  }
+};
+
+LiveCards.prototype.loopBook = function() {
+  var nextKey;
   // Reference to the /messages/ database path.
   this.bookRef = this.database.ref('book-20170808165000');
   // Make sure we remove all previous listeners.
@@ -73,22 +153,79 @@ LiveCards.prototype.loadBook = function() {
   if (!this.auth.currentUser) {
     this.userName.textContent = 'Not signing in!';
   }
-  // Loads the last number of stories and listen for new ones.
-  var setStory = function(data) {
+  // Load stories when button click.
+  var n = 6; // Loads story of (n) = lot-size +1
+  var i = document.getElementsByClassName("loop-tracker")[0].id; // Get loop-tracker.
+  var keyTracker = document.getElementsByClassName("key-tracker")[0].id; // Get key-tracker.
+  var keyID = keyTracker.substr(1);
+  console.log('keyID: ' + keyID);
+
+  var setStory = function(data, prevKey) {
     var val = data.val();
-    this.displayStory(data.key, val.title, val.content, val.name, val.photoUrl, val.imageUrl, val.date);
+    console.log('setStory Loaded: ' + data.key + ' PrevKEY: ' + prevKey);
+    if (!prevKey) {
+      console.log('!prevKey | i: ' + i);
+      var looperDiv = document.getElementsByClassName("loop-tracker")[0];
+      looperDiv.setAttribute('id',i);
+      var nxtkeyDiv = document.getElementsByClassName("key-tracker")[0];
+      nxtkeyDiv.setAttribute('id','#'+data.key);
+    }
+    console.log('call loadDisplay: ' + data.key);
+    this.loadDisplay(data.key, val.title, val.content, val.name, val.photoUrl, val.imageUrl, val.date);
   }.bind(this);
-  var chgStory = function(data) {
+
+  var addStory = function(data, prevKey) {
     var val = data.val();
-    this.correctStory(data.key, val.title, val.content, val.name, val.photoUrl, val.imageUrl, val.date);
+    console.log('newStory ADDed: ' + data.key + ' PrevKEY: ' + prevKey);
+    this.liveDisplay(data.key, val.title, val.content, val.name, val.photoUrl, val.imageUrl, val.date);
+    var newStory = document.getElementById('new-badge').getAttribute("data-badge");
+    newStory++;
+    console.log('new story: ' + newStory);
+    var newIcon = document.getElementById('new-badge');
+    newIcon.setAttribute('data-badge', newStory);
+    var loadPrev = document.getElementById('load-prev');
+    if (newStory > 0) {
+      loadPrev.removeAttribute('hidden');
+    }
   }.bind(this);
+
+  var chgStory = function(data, prevKey) {
+    var val = data.val();
+    console.log('chgStory CHGed: ' + data.key + ' PrevKEY: ' + prevKey);
+    this.editDisplay(data.key, val.title, val.content, val.name, val.photoUrl, val.imageUrl, val.date);
+  }.bind(this);
+
+  i++; // Read block of (n) stories.
+  this.bookRef.orderByKey().endAt(keyID).limitToLast(n).on('child_added', setStory);
+  this.bookRef.once('value').then(function(snapshot) {
+    var m = snapshot.numChildren();
+    var alertStory = m - i*n;
+    if (alertStory <= 0) {
+      var loadNext = document.getElementById('load-next');
+      loadNext.setAttribute('hidden', 'true');
+        console.log('alertStory <= 0');
+    } else {
+      console.log('Story: ' + alertStory);
+
+      var prevIcon = document.getElementById('nxt-badge');
+      prevIcon.setAttribute('data-badge', alertStory);
+    }
+  });
+  // Listen to: newly added * changed * removed.
+  this.bookRef.limitToLast(1).on('child_added', addStory);
+  this.bookRef.on('child_changed', chgStory);
   this.bookRef.on('child_removed', function(data) {
+    console.log('child_removed: ' + data.key);
     var child = document.getElementById(data.key);
-    var parent = document.getElementById("story-list");
+    var parent = document.getElementById(data.key).parentNode; // Get the correct parent HERE!!
+    console.log('parent: ' + parent);
     parent.removeChild(child);
   });
-  this.bookRef.on('child_changed', chgStory);
-  this.bookRef.limitToLast(5).on('child_added', setStory);
+  var newStory = document.getElementById('new-badge').getAttribute("data-badge");
+  newStory--;
+  console.log('new story(-): ' + newStory);
+  var newIcon = document.getElementById('new-badge');
+  newIcon.setAttribute('data-badge', newStory);
 };
 
 // Template for Stories: A Story Template
@@ -111,11 +248,12 @@ LiveCards.STORY_TEMPLATE =
           '</span>' +
         '</div>' +
         '<div class="mdl-layout-spacer"></div>' +
-        '<button class="likeButton mdl-button mdl-button--icon mdl-button--colored"><i class="material-icons">favorite</i></button>' +
+        '<button class="likeButton mdl-button mdl-button--icon mdl-button--colored mdl-badge" data-badge="3"><i class="material-icons">favorite</i></button>' +
+        '<button class="shareButton mdl-button mdl-button--icon mdl-button--colored"><i class="material-icons">share</i></button>' +
       '</div>' +
       '<div class="mdl-card__menu">' +
         '<button class="mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect">' +
-          '<i class="material-icons">share</i>' +
+          '<i class="material-icons">clear</i>' +
         '</button>' +
       '</div>' +
     '</div>' +
@@ -131,12 +269,14 @@ LiveCards.IMAGE_PROGRESSBAR =
   '</div>';
 
 // Displays a Story in the UI.
-LiveCards.prototype.displayStory = function(key, title, content, name, picUrl, imageUri, date) {
+LiveCards.prototype.initDisplay = function(key, title, content, name, picUrl, imageUri, date) {
+  console.log('key* :' + key);
+  console.log('title* :' + title);
   var div = document.getElementById(key);
   var storyDate = date;
   // If an element for that story does not exists yet we create it.
-  if (!div) {
-    var fDate = document.getElementById("story-list").getElementsByClassName("dateTime")[0];
+  if (!div) { //Displaying new story.
+    var fDate = document.getElementById("story-list-0").getElementsByClassName("dateTime")[0];
     if (fDate) {
       var firstDate = fDate.innerHTML;
     } else {
@@ -151,9 +291,124 @@ LiveCards.prototype.displayStory = function(key, title, content, name, picUrl, i
     var x = div.getElementsByClassName("likeButton")[0];
     x.setAttribute('id', key+'.like');
     if (storyDate > firstDate) {
-      this.storyList.insertBefore(div,this.storyList.firstChild);
+      this.storyList0.insertBefore(div,this.storyList0.firstChild);
     } else {
-      this.storyList.appendChild(div);
+      this.storyList0.appendChild(div);
+    }
+  }
+  if (!imageUri) { // If the story has NO-image.
+      div.getElementsByClassName("storyImage")[0].innerHTML = '';
+  } else { // If the story has an image.
+    div.getElementsByClassName("storyImage")[0].innerHTML = LiveCards.IMAGE_PROGRESSBAR;
+    var image = document.createElement('img');
+    image.addEventListener('load', function() {
+      // Remove MDL Progress Bar when done!
+      div.getElementsByClassName("materialBar")[0].innerHTML = '';
+    }.bind(this));
+    this.setImageUrl(imageUri, image);
+    div.getElementsByClassName("storyImage")[0].appendChild(image);
+  }
+  if (!title) { // If the story has NO-title.
+    div.getElementsByClassName("title")[0].innerHTML = '';
+  } else { // If the story has a title.
+    var htmlTitle = title.replace(/\n/g, '<br>');
+    div.getElementsByClassName("title")[0].innerHTML = htmlTitle;
+  }
+  if (!content) { // It the story has NO-content.
+    div.getElementsByClassName("content")[0].innerHTML = '';
+  } else { // It the story has a content.
+    var htmlContent = content.replace(/\n/g, '<br>');
+    div.getElementsByClassName("content")[0].innerHTML = htmlContent;
+  }
+};
+
+// Displays a Story in the UI.
+LiveCards.prototype.loadDisplay = function(key, title, content, name, picUrl, imageUri, date) {
+  var showList = document.getElementById("show-list");
+  var i = document.getElementsByClassName("loop-tracker")[0].id; // Get loop-tracker.
+  var listName = "story-list-" + i;
+  console.log('create name: ' + listName);
+  var loopList = document.getElementById(listName); // Get "story-list-i"
+  if (!loopList) { // If no story-list-i, create now!
+    loopList = document.createElement("DIV");
+    loopList.setAttribute('id', listName);
+    showList.appendChild(loopList);
+  }
+  var div = document.getElementById(key); // Get story div.
+  var storyDate = date; // Get story date.
+  if (!div) { // If an element for that story does not exists yet we create it.
+    var fDate = document.getElementById(listName).getElementsByClassName("dateTime")[0];
+    if (fDate) {
+      var firstDate = fDate.innerHTML;
+    } else {
+      firstDate = 0;
+    }
+    if (storyDate > firstDate) {
+      var container = document.createElement("DIV");
+      container.innerHTML = LiveCards.STORY_TEMPLATE;
+      div = container.firstChild;
+      div.setAttribute('id', key);
+      div.getElementsByClassName("userPic")[0].style.backgroundImage = 'url(' + picUrl + ')';
+      div.getElementsByClassName("dateTime")[0].innerHTML = date;
+      var x = div.getElementsByClassName("likeButton")[0];
+      x.setAttribute('id', key+'.like');
+      loopList.insertBefore(div,loopList.firstChild);
+      if (!imageUri) { // If the story has NO-image.
+        div.getElementsByClassName("storyImage")[0].innerHTML = '';
+      } else { // If the story has an image.
+        div.getElementsByClassName("storyImage")[0].innerHTML = LiveCards.IMAGE_PROGRESSBAR;
+        var image = document.createElement('img');
+        image.addEventListener('load', function() {
+          // Remove MDL Progress Bar when done!
+          div.getElementsByClassName("materialBar")[0].innerHTML = '';
+        }.bind(this));
+        this.setImageUrl(imageUri, image);
+        div.getElementsByClassName("storyImage")[0].appendChild(image);
+      }
+      if (!title) { // If the story has NO-title.
+        div.getElementsByClassName("title")[0].innerHTML = '';
+      } else { // If the story has a title.
+        var htmlTitle = title.replace(/\n/g, '<br>');
+        div.getElementsByClassName("title")[0].innerHTML = htmlTitle;
+      }
+      if (!content) { // It the story has NO-content.
+        div.getElementsByClassName("content")[0].innerHTML = '';
+      } else { // It the story has a content.
+        var htmlContent = content.replace(/\n/g, '<br>');
+        div.getElementsByClassName("content")[0].innerHTML = htmlContent;
+      }
+    }
+  }
+};
+
+// Displays a Story in the UI.
+LiveCards.prototype.liveDisplay = function(key, title, content, name, picUrl, imageUri, date) {
+  var listOne = document.getElementById("story-list-1"); // Check existing of story-list-1.
+  console.log('live key* :' + key);
+  console.log('live title* :' + title);
+  var div = document.getElementById(key);
+  var storyDate = date; // If an element for that story does not exists yet we create it.
+  if (!div) { //Displaying new story.
+    var fDate = document.getElementById("story-list-0").getElementsByClassName("dateTime")[0];
+    if (fDate) {
+      var firstDate = fDate.innerHTML;
+    } else {
+      firstDate = 0;
+    }
+    var container = document.createElement("DIV");
+    container.innerHTML = LiveCards.STORY_TEMPLATE;
+    div = container.firstChild;
+    div.setAttribute('id', key);
+    div.getElementsByClassName("userPic")[0].style.backgroundImage = 'url(' + picUrl + ')';
+    div.getElementsByClassName("dateTime")[0].innerHTML = date;
+    var x = div.getElementsByClassName("likeButton")[0];
+    x.setAttribute('id', key+'.like');
+    if (storyDate > firstDate) {
+      this.storyList0.insertBefore(div,this.storyList0.firstChild);
+    } else {
+      if (!listOne) { // Continue only if there is -NO- story-list-1.
+        this.storyList0.appendChild(div);
+      }
     }
   }
   if (!imageUri) { // If the story has NO-image.
@@ -183,7 +438,7 @@ LiveCards.prototype.displayStory = function(key, title, content, name, picUrl, i
 };
 
 // Correcting Displayed Story in the UI.
-LiveCards.prototype.correctStory = function(key, title, content, name, picUrl, imageUri, date) {
+LiveCards.prototype.editDisplay = function(key, title, content, name, picUrl, imageUri, date) {
   var div = document.getElementById(key);
   if (div) {
     if (!imageUri) { // If the story has NO-image.
@@ -281,7 +536,7 @@ LiveCards.prototype.saveStory = function(event) {
       // Check that the user uploaded image or entered a title or any content.
       if (this.titleStory.value || this.contentStory.value) {
         var currentUser = this.auth.currentUser;
-        var d = new Date();
+        var d = Date.now();
         // Add a new message entry to the Firebase Database.
         this.bookRef = this.database.ref('book-20170808165000');
         this.bookRef.push({
@@ -289,7 +544,7 @@ LiveCards.prototype.saveStory = function(event) {
           photoUrl: currentUser.photoURL || '/images/profile_placeholder.svg',
           title: this.titleStory.value,
           content: this.contentStory.value,
-          date: d.toJSON()
+          date: d
         }).then(function() {
             // Clear input new story card.
             this.deleteNewCard();
@@ -333,7 +588,7 @@ LiveCards.prototype.onAuthStateChanged = function(user) {
 
     // Show sign-out button and input new card form.
     this.signOutButton.removeAttribute('hidden');
-    this.inputBlock.removeAttribute('hidden');
+    // this.inputBlock.removeAttribute('hidden');
 
   } else { // User is signed out!
     // Hide sign-out button and input form.
